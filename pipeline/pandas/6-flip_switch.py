@@ -5,5 +5,5 @@
 
 def flip_switch(df):
     """A function that does the trick"""
-    df = df.sort_index(axis=1, ascending=True)
+    df = df.sort_index(ascending=False)
     return df.T
