@@ -3,9 +3,6 @@
 """A module to change values"""
 
 
-import pandas as pd
-
-
 def array(df):
     """Convert these selected values into a
     numpy.ndarray."""
