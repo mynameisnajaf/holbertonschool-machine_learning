@@ -5,4 +5,4 @@
 
 def slice(df):
     """A function that does the trick"""
-    return df.loc[60, ["High", "Low", "Close", "Volume_BTC"]]
+    return df.loc[60:64, ["High", "Low", "Close", "Volume_(BTC)"]]
