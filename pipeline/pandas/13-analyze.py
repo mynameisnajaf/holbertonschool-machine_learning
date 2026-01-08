@@ -5,4 +5,4 @@
 
 def analyze(df):
     """A function that does the trick"""
-    return df.describe(exclude=["Timestamp"])
+    return df.drop(columns=["Timestamp"]).describe()
