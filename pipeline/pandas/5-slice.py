@@ -5,6 +5,6 @@
 
 def slice(df):
     """A function that does the trick"""
-    columns = ["High", "Low", "Close", "Volume_BTC"]
+    columns = ["High", "Low", "Close", "Volume_(BTC)"]
     df_selected = df[columns]
     return df_selected.iloc[::60]
