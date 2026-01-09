@@ -5,9 +5,7 @@
 
 import matplotlib.pyplot as plt
 import pandas as pd
-def from_file(filename, delimiter):
-    """A function to load data from file with delimiter"""
-    return pd.read_csv(filename, sep=delimiter)
+from_file = __import__('2-from_file').from_file
 
 df = from_file('coinbaseUSD_1-min_data_2014-12-01_to_2019-01-09.csv', ',')
 
