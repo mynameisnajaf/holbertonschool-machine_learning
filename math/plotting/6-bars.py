@@ -1,33 +1,39 @@
 #!/usr/bin/env python3
 
-"""A module that does the trick"""
+"""A module that does the trick."""
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 
 def bars():
-    """I prefer chocolate bars"""
+    """I prefer chocolate bars."""
     np.random.seed(5)
-    fruit = np.random.randint(0, 20, (4,3))
+    fruit = np.random.randint(0, 20, (4, 3))
     plt.figure(figsize=(6.4, 4.8))
+
     people = ["Farrah", "Fred", "Felicia"]
     colors = ["red", "yellow", "#ff8000", "#ffe5b4"]
+    fruit_names = ["apples", "bananas", "oranges", "peaches"]
+
     x = np.arange(len(people))
     bottom = np.zeros(len(people))
+
     for i in range(fruit.shape[0]):
-        plt.bar(x,
-                fruit[i],
-                bottom=bottom,
-                color=colors[i],
-                width=0.5,
-                label=["apples","bananas","oranges","peaches"][i])
+        plt.bar(
+            x,
+            fruit[i],
+            bottom=bottom,
+            color=colors[i],
+            width=0.5,
+            label=fruit_names[i]
+        )
         bottom += fruit[i]
+
     plt.ylabel("Quantity of Fruit")
     plt.ylim(0, 80)
     plt.yticks(np.arange(0, 81, 10))
     plt.xticks(x, people)
     plt.title("Number of Fruit per Person")
     plt.legend()
-
     plt.show()
