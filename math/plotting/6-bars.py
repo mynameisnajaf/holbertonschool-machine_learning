@@ -21,7 +21,7 @@ def bars():
                 bottom=bottom,
                 color=colors[i],
                 width=0.5,
-                label=["Apples","Bananas","Oranges","Peaches"][i])
+                label=["apples","bananas","oranges","peaches"][i])
         bottom += fruit[i]
     plt.ylabel("Quantity of Fruit")
     plt.ylim(0, 80)
