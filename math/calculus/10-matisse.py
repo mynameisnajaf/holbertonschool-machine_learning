@@ -18,5 +18,3 @@ def poly_derivative(poly):
         for i in range(1, len(poly)):
             new_list.append(poly[i]*i)
         return new_list
-poly = [5, 3, 0, 1]
-print(poly_derivative(poly))
