@@ -6,7 +6,7 @@
 def mat_mul(mat1, mat2):
     """A function that does the trick"""
     if len(mat1[0]) != len(mat2):
-       return None
+        return None
     new_matrix = []
     for i in range(len(mat1)):
         new_row = []
