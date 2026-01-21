@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+\#!/usr/bin/env python3
 
 """A module that does the trick"""
 
@@ -7,6 +7,8 @@ def cat_matrices2D(mat1, mat2, axis=0):
     """A function that does the trick"""
     new_matrix =[]
     if axis == 0:
+        if len(mat1[0]) != len(mat2[0]):
+            return None
         new_matrix = [x[:] for x in mat1] + [x[:] for x in mat2]
     elif axis == 1:
         if len(mat1) != len(mat2):
