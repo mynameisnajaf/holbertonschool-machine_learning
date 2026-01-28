@@ -4,8 +4,9 @@
 
 def determinant(matrix):
     """Calculate the determinant of a square matrix."""
-    if not isinstance(matrix, list) or not \
-all(isinstance(row, list) for row in matrix):
+    if not isinstance(matrix, list) or not all(
+        isinstance(row, list) for row in matrix
+    ):
         raise TypeError("matrix must be a list of lists")
 
     h = len(matrix)
@@ -30,8 +31,9 @@ all(isinstance(row, list) for row in matrix):
 
 def minor(matrix):
     """Calculate the minor matrix of a square matrix."""
-    if not isinstance(matrix, list) or not \
-all(isinstance(row, list) for row in matrix):
+    if not isinstance(matrix, list) or not all(
+        isinstance(row, list) for row in matrix
+    ):
         raise TypeError("matrix must be a list of lists")
 
     h = len(matrix)
