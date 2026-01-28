@@ -29,7 +29,7 @@ def determinant(matrix):
     return det
 
 
-def minor(matrix):
+def cofactor(matrix):
     """Calculate the minor matrix of a square matrix."""
     if not isinstance(matrix, list) or not all(
         isinstance(row, list) for row in matrix
