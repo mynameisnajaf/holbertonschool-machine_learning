@@ -14,15 +14,15 @@ def definiteness(matrix):
     if not np.array_equal(transpose, matrix):
         return None
 
-    eigen = np.linalg.eig(matrix)
+    eigenvalues, eigenvectors = np.linalg.eig(matrix)
 
-    if all(eigen > 0):
+    if all(eigenvalues, eigenvectors > 0):
         return 'Positive definite'
-    elif all(eigen >= 0):
+    elif all(eigenvalues, eigenvectors >= 0):
         return 'Positive semi-definite'
-    elif all(eigen < 0):
+    elif all(eigenvalues, eigenvectors < 0):
         return 'Negative definite'
-    elif all(eigen <= 0):
+    elif all(eigenvalues, eigenvectors <= 0):
         return 'Negative semi-definite'
     else:
         return 'Indefinite'
