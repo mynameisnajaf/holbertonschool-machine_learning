@@ -73,6 +73,9 @@ def inverse(matrix):
         isinstance(row, list) for row in matrix
     ):
         raise TypeError("matrix must be a list of lists")
+    h = len(matrix)
+    if h == 0 or any(len(row) != h for row in matrix):
+        raise ValueError("matrix must be a non-empty square matrix")
 
     det = determinant(matrix)
     if det == 0:
