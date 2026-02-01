@@ -67,6 +67,7 @@ def adjugate(matrix):
 
     return adj
 
+
 def inverse(matrix):
     """Calculate the inverse of a square matrix."""
     if not isinstance(matrix, list) or not all(
