@@ -37,7 +37,8 @@ class Normal:
         return z * self.stddev + self.mean
 
     def pdf(self, x):
+        """Calculates the PDF"""
         pi = 3.1415926536
         e = 2.7182818285
-        """Calculates the PDF"""
-        return (1 / (self.stddev * ((2 * pi)**0.5))) * (e**(-(self.z_score(x))**2 / 2))
+        first_part = (1 / (self.stddev * ((2 * pi)**0.5)))
+        return first_part * (e**(-(self.z_score(x))**2 / 2))
