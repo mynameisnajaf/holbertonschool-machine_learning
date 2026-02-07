@@ -24,7 +24,7 @@ class Binomial:
             summ = 0
             for i in data:
                 summ += (i - mean) ** 2
-            variance = (summation / len(data))
+            variance = (summ / len(data))
             self.p = 1 - (variance / mean)
             self.n = int(round(mean / self.p))
             self.p = mean / self.n
