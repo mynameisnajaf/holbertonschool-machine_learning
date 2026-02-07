@@ -32,6 +32,6 @@ class Normal:
         """Calculates the z-score"""
         return (x - self.mean) / self.stddev
 
-    def x_value(self, z)
+    def x_value(self, z):
         """Calculates the x-value"""
         return z * self.stddev + self.mean
