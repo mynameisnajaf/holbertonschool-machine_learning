@@ -45,3 +45,13 @@ class Binomial:
             nk_fact *= i
         comb = n_fact / (k_fact * nk_fact)
         return comb * (self.p ** k) * ((1 - self.p) ** (self.n - k))
+
+    def cdf(self, k):
+        """A function Calculates the value of the CDF"""
+        k = int(k)
+        if k < 0:
+            return 0
+        cdf = 0
+        for i in range(k+1):
+            cdf += self.pmf(i)
+        return cdf
