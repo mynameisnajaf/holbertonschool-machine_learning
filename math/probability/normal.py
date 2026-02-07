@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
-
 """A module that does the trick"""
 
 
 class Normal:
-    """
-    Tye class to call methods of Normal distribution
-    """
+    """The class to call methods of Normal distribution"""
 
     def __init__(self, data=None, mean=0., stddev=1.):
-        """A function that does the trick"""
+        """Initializes the Normal distribution"""
         if data is None:
             if stddev <= 0:
                 raise ValueError("stddev must be a positive value")
@@ -18,15 +15,14 @@ class Normal:
         else:
             if type(data) is not list:
                 raise TypeError("data must be a list")
-            elif len(data) < 2:
+            if len(data) < 2:
                 raise ValueError("data must contain multiple values")
-            else:
-                self.mean = (sum(data) / len(data))
-                summ = 0
-                for i in data:
-                    summ += (i - self.mean) ** 2
 
-                self.stddev = (summ / len(data)) ** 0.5
+            self.mean = sum(data) / len(data)
+            summ = 0
+            for i in data:
+                summ += (i - self.mean) ** 2
+            self.stddev = (summ / len(data)) ** 0.5
 
     def z_score(self, x):
         """Calculates the z-score"""
@@ -40,15 +36,24 @@ class Normal:
         """Calculates the PDF"""
         pi = 3.1415926536
         e = 2.7182818285
-        first_part = (1 / (self.stddev * ((2 * pi)**0.5)))
-        return first_part * (e**(-(self.z_score(x))**2 / 2))
+        coef = 1 / (self.stddev * (2 * pi) ** 0.5)
+        exponent = -(self.z_score(x) ** 2) / 2
+        return coef * (e ** exponent)
 
     def cdf(self, x):
         """Calculates the CDF"""
         pi = 3.1415926536
-        e = 2.7182818285
-        xa = self.z_score(x) / (2**0.5)
-        erff = ((2 / (pi ** 0.5)) * (xa - (xa ** 3) / 3 +
-                                             (xa ** 5) / 10 - (xa ** 7) / 42 +
-                                             (xa ** 9) / 216))
-        return (1 + erff) / 2
+        xa = self.z_score(x) / (2 ** 0.5)
+
+        erf = (
+            (2 / (pi ** 0.5)) *
+            (
+                xa -
+                (xa ** 3) / 3 +
+                (xa ** 5) / 10 -
+                (xa ** 7) / 42 +
+                (xa ** 9) / 216
+            )
+        )
+
+        return (1 + erf) / 2
