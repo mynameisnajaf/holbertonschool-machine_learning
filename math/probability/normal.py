@@ -45,7 +45,7 @@ class Normal:
 
     def cdf(self, x):
         """Calculates the CDF"""
-        xa = z_score(x) / (2**0.5)
+        xa = self.z_score(x) / (2**0.5)
         erff = ((2 / (pi ** 0.5)) * (xa - (xa ** 3) / 3 +
                                              (xa ** 5) / 10 - (xa ** 7) / 42 +
                                              (xa ** 9) / 216))
