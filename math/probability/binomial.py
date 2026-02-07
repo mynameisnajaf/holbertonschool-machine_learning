@@ -28,3 +28,11 @@ class Binomial:
             self.p = 1 - (variance / mean)
             self.n = int(round(mean / self.p))
             self.p = mean / self.n
+
+    def pmf(self, k):
+        """Calculates the value of the PMF"""
+        k = int(k)
+        if k < 0:
+            return 0
+        pmf = ((self.p)**k) * (1 - self.p)**(1-k)
+        return pmf
