@@ -45,4 +45,3 @@ class Binomial:
             nk_fact *= i
         comb = n_fact / (k_fact * nk_fact)
         return comb * (self.p ** k) * ((1 - self.p) ** (self.n - k))
-
