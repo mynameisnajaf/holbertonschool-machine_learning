@@ -6,7 +6,7 @@ import numpy as np
 
 def likelihood(x, n, P):
     """A function that does the trick"""
-    if type(x) is not int or n <= 0:
+    if type(n) is not int or n <= 0:
         raise ValueError('n must be a positive integer')
     if type(x) is not int and x < 0:
         raise ValueError(
