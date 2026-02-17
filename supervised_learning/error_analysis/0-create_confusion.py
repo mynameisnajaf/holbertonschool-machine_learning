@@ -6,17 +6,11 @@ import numpy as np
 
 def create_confusion_matrix(labels, logits):
     """A function that does the trick"""
-    tp = tn = fp = fn = 0
+    classes = np.unique(np.concatenate((labels, logits)))
+    num_classes = len(classes)
+    confusion_mat = np.zeros((num_classes, num_classes), dtype=int)
+    for i in range(num_classes):
+        for j in range(num_classes):
+            confusion_mat[i, j] = np.sum((labels == classes[i]) and (logits == classes[j]))
 
-    for i in range(len(labels)):
-        if labels[i] == 1 and logits[i] == 1:
-            tp += 1
-        elif labels[i] == 0 and logits[i] == 0:
-            fn += 1
-        elif labels[i] == 0 and logits[i] == 1:
-            fp += 1
-        elif labels[i] == 1 and logits[i] == 0:
-            tn += 1
-
-    confusion_matrix = [[tp, fn], [fp, tn]]
-    return confusion_matrix
+    return confusion_mat, classes
