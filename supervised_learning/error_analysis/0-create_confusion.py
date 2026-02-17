@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
-
-"""A module that does the trick"""
+"""Creates a confusion matrix"""
 import numpy as np
 
 
 def create_confusion_matrix(labels, logits):
-    """A function that does the trick"""
-    classes = np.unique(np.concatenate((labels, logits)))
-    num_classes = len(classes)
-    confusion_mat = np.zeros((num_classes, num_classes), dtype=int)
-    for i in range(num_classes):
-        for j in range(num_classes):
-            confusion_mat[i, j] = np.sum((labels == classes[i]) & (logits == classes[j]))
+    """
+    Creates a confusion matrix
 
-    return confusion_mat, classes
+    labels: one-hot numpy.ndarray of shape (m, classes)
+    logits: one-hot numpy.ndarray of shape (m, classes)
+
+    Returns:
+    confusion matrix of shape (classes, classes)
+    """
+    m, classes = labels.shape
+    true_classes = np.argmax(labels, axis=1)
+    predicted_classes = np.argmax(logits, axis=1)
+
+    confusion = np.zeros((classes, classes))
+
+    for i in range(m):
+        confusion[true_classes[i], predicted_classes[i]] += 1
+
+    return confusion
