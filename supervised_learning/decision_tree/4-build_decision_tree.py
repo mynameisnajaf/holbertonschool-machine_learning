@@ -81,11 +81,11 @@ class Node:
             leaves.extend(self.right_child.get_leaves_below())
         return leaves
 
-    def update_bounds_below(self) :
+    def update_bounds_below(self):
         """Update the bounds below the decision tree"""
-        if self.is_root :
-            self.upper = { 0:np.inf }
-            self.lower = {0 : -1*np.inf }
+        if self.is_root:
+            self.upper = {0: np.inf}
+            self.lower = {0: -1*np.inf}
 
         for child in [self.left_child, self.right_child]:
             if child is None:
@@ -98,7 +98,7 @@ class Node:
             else:
                 child.upper[self.feature] = self.threshold
 
-        for child in [self.left_child, self.right_child] :
+        for child in [self.left_child, self.right_child]:
             child.update_bounds_below()
 
 
@@ -127,7 +127,7 @@ class Leaf(Node):
         """Return leaves below the decision tree"""
         return [self]
 
-    def update_bounds_below(self) :
+    def update_bounds_below(self):
         """Update the bounds below the decision tree"""
         pass
 
@@ -171,6 +171,6 @@ class Decision_Tree():
         """Return leaves below the decision tree"""
         return self.root.get_leaves_below()
 
-    def update_bounds(self) :
+    def update_bounds(self):
         """Update the bounds below the decision tree"""
         self.root.update_bounds_below()
