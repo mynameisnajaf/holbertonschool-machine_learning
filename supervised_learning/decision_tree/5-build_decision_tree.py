@@ -102,6 +102,7 @@ class Node:
             child.update_bounds_below()
 
     def update_indicator(self):
+        """Update the indicator function"""
         def is_large_enough(x):
             # Check all features against lower bounds
             return np.all(
