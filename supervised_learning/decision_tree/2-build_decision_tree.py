@@ -72,6 +72,15 @@ class Node:
                 new_text += ("       " + x) + "\n"
         return (new_text)
 
+    def get_leaves_below(self):
+        """Return leaves below the decision tree"""
+        leaves = []
+        if self.left_child:
+            leaves.extend(self.left_child.get_leaves_below())
+        if self.right_child:
+            leaves.extend(self.right_child.get_leaves_below())
+        return leaves
+
 
 class Leaf(Node):
     """A class to represent a leaf in a decision tree"""
@@ -93,6 +102,10 @@ class Leaf(Node):
     def __str__(self):
         """Return a string representation of the decision tree"""
         return (f"-> leaf [value={self.value}]")
+
+    def get_leaves_below(self):
+        """Return leaves below the decision tree"""
+        return [self]
 
 
 class Decision_Tree():
@@ -129,3 +142,7 @@ class Decision_Tree():
     def __str__(self):
         """Return a string representation of the decision tree"""
         return self.root.__str__()
+
+    def get_leaves(self):
+        """Return leaves below the decision tree"""
+        return self.root.get_leaves_below()
