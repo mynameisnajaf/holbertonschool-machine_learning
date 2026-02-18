@@ -43,14 +43,21 @@ class Node:
 
     def __str__(self):
         """string representation of a node in the decision tree"""
-        if self.is_leaf:
-            return f"{self.left_child}\n"
+        # Determine node type
+        if self.is_root:
+            text = f"root [feature={self.feature}, threshold={self.threshold}]"
         else:
-            left_str = f'{self.left_child}' if self.left_child else ''
-            right_str = f'{self.right_child}' if self.right_child else ''
-            return (f"[feature={self.feature}, threshold={self.threshold}]\n" +
-                    self.left_child_add_prefix(left_str) +
-                    self.right_child_add_prefix(right_str))
+            text = f"-> node [feature={self.feature}, threshold={self.threshold}]"
+
+        # Add children if they exist
+        left_str = str(self.left_child) if self.left_child else ''
+        right_str = str(self.right_child) if self.right_child else ''
+
+        if self.left_child:
+            text += "\n" + self.left_child_add_prefix(left_str)
+        if self.right_child:
+            text += "\n" + self.right_child_add_prefix(right_str)
+        return text
 
     def left_child_add_prefix(self, text):
         """Add a prefix to the left of the decision tree"""
@@ -90,7 +97,7 @@ class Leaf(Node):
 
     def __str__(self):
         """Return a string representation of the decision tree"""
-        return (f"-> leaf [value={self.value}]")
+        return (f"-> Leaf [value={self.value}]")
 
 
 class Decision_Tree():
