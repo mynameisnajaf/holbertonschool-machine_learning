@@ -42,35 +42,15 @@ class Node:
             return 1 + left + right
 
     def __str__(self):
-        """Return a string representation of the decision tree"""
         if self.is_root:
-            result = f"root [feature={self.feature}, threshold={self.threshold}]\n"
+            prefix = "root"
         else:
-            result = f"-> node [feature={self.feature}, threshold={self.threshold}]\n"
+            prefix = "-> node"
 
-        if self.left_child:
-            result += "\n" + self.left_child_add_prefix(str(self.left_child))
-        if self.right_child:
-            result += "\n" + self.right_child_add_prefix(str(self.right_child))
+        result = f"{prefix} [feature={self.feature}, threshold={self.threshold}]\n"
+        result += left_child_add_prefix(self.left_child.__str__())
+        result += right_child_add_prefix(self.right_child.__str__())
         return result
-
-    def left_child_add_prefix(self, text):
-        """Add a prefix to the left of the decision tree"""
-        lines = text.split("\n")
-        new_text = "    +--" + lines[0] + "\n"
-        for x in lines[1:]:
-            if x:
-                new_text += "    |      " + x + "\n"
-        return (new_text)
-
-    def right_child_add_prefix(self, text):
-        """Add a prefix to the right of the decision tree"""
-        lines = text.split("\n")
-        new_text = "    +--" + lines[0] + "\n"
-        for x in lines[1:]:
-            if x:
-                new_text += "           " + x + "\n"
-        return (new_text)
 
 
 class Leaf(Node):
@@ -130,3 +110,17 @@ class Decision_Tree():
         """Return a string representation of the decision tree"""
         return self.root.__str__()
 
+def left_child_add_prefix(text):
+    lines = text.split("\n")
+    new_text = "    +--" + lines[0] + "\n"
+    for x in lines[1:]:
+        new_text += "    |  " + x + "\n"
+    return new_text
+
+
+def right_child_add_prefix(text):
+    lines = text.split("\n")
+    new_text = "    +--" + lines[0] + "\n"
+    for x in lines[1:]:
+        new_text += "       " + x + "\n"
+    return new_text
