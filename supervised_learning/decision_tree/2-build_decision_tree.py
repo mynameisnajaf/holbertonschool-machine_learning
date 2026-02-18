@@ -48,8 +48,8 @@ class Node:
         else:
             result = f"-> node [feature={self.feature}, threshold={self.threshold}]\n"
 
-        result += self.left_child_add_prefix(self.left_child.__str__())
-        result += self.right_child_add_prefix(self.right_child.__str__())
+        result += "\n" + self.left_child_add_prefix(self.left_child.__str__())
+        result += "\n" + self.right_child_add_prefix(self.right_child.__str__())
         return result
 
     def left_child_add_prefix(self, text):
