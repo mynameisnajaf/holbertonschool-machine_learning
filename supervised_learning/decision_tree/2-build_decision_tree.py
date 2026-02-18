@@ -59,7 +59,7 @@ class Node:
         for x in lines[1:]:
             if x:
                 new_text += "    |      " + x + "\n"
-        return new_text
+        return new_text.rstrip()
 
     def right_child_add_prefix(self, text):
         """Add a prefix to the right of the decision tree"""
@@ -68,7 +68,7 @@ class Node:
         for x in lines[1:]:
             if x:
                 new_text += "           " + x + "\n"
-        return new_text
+        return new_text.rstrip()
 
 
 class Leaf(Node):
