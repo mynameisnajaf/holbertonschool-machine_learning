@@ -108,7 +108,8 @@ class Node:
             return np.all(
                 np.array(
                     [np.greater(x[:, key],
-                                self.lower[key]) for key in self.lower.keys()]),
+                                self.lower[key])
+                     for key in self.lower.keys()]),
                 axis=0)
 
         def is_small_enough(x):
@@ -116,7 +117,8 @@ class Node:
             return np.all(
                 np.array(
                     [np.less_equal(x[:, key],
-                                   self.upper[key]) for key in self.upper.keys()]),
+                                   self.upper[key])
+                     for key in self.upper.keys()]),
                 axis=0)
 
         # Combine element-wise (logical AND)
