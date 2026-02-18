@@ -106,13 +106,12 @@ class Node:
 
         def is_large_enough(x):
             """Return True if x is larger than threshold"""
-            for feature in self.lower:
-                return (x[:, feature] > self.lower[feature])
+            return np.all(np.array([np.greater(x[:,key],self.lower[key]) for key in list(self.lower.keys())]), axis=0)
 
         def is_small_enough(x):
             """Return True if x is smaller than threshold"""
-            for feature in self.lower:
-                return (x[:, feature] <= self.upper[feature])
+            return np.all(np.array([np.less_equal(x[:, key], self.upper[key]) for key in list(self.upper.keys())]))
+
         self.indicator = lambda x: np.all(np.array([is_large_enough(x), is_small_enough(x)]), axis=0)
 
 
