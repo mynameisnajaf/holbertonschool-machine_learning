@@ -102,17 +102,16 @@ class Node:
             child.update_bounds_below()
 
     def update_indicator(self):
-        """Update the indicator for the decision tree"""
-
         def is_large_enough(x):
-            """Return True if x is larger than threshold"""
-            return np.all(np.array([np.greater(x[:,key],self.lower[key]) for key in list(self.lower.keys())]), axis=0)
+            # Check all features against lower bounds
+            return np.all(np.array([np.greater(x[:, key], self.lower[key]) for key in self.lower.keys()]), axis=0)
 
         def is_small_enough(x):
-            """Return True if x is smaller than threshold"""
-            return np.all(np.array([np.less_equal(x[:, key], self.upper[key]) for key in list(self.upper.keys())]))
+            # Check all features against upper bounds
+            return np.all(np.array([np.less_equal(x[:, key], self.upper[key]) for key in self.upper.keys()]), axis=0)
 
-        self.indicator = lambda x: np.all(np.array([is_large_enough(x), is_small_enough(x)]), axis=0)
+        # Combine element-wise (logical AND)
+        self.indicator = lambda x: is_large_enough(x) & is_small_enough(x)
 
 
 class Leaf(Node):
@@ -187,11 +186,3 @@ class Decision_Tree():
     def update_bounds(self):
         """Update the bounds below the decision tree"""
         self.root.update_bounds_below()
-
-def example_0():
-    leaf0 = Leaf(0, depth=1)
-    leaf1 = Leaf(0, depth=2)
-    leaf2 = Leaf(1, depth=2)
-    internal_node = Node(feature=1, threshold=30000, left_child=leaf1, right_child=leaf2, depth=1)
-    root = Node(feature=0, threshold=.5, left_child=leaf0, right_child=internal_node, depth=0, is_root=True)
-    return Decision_Tree(root=root)
