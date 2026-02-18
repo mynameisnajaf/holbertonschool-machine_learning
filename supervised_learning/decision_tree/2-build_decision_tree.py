@@ -48,8 +48,10 @@ class Node:
         else:
             result = f"-> node [feature={self.feature}, threshold={self.threshold}]\n"
 
-        result += "\n" + self.left_child_add_prefix(self.left_child.__str__())
-        result += "\n" + self.right_child_add_prefix(self.right_child.__str__())
+        if self.left_child:
+            result += "\n" + self.left_child_add_prefix(str(self.left_child))
+        if self.right_child:
+            result += "\n" + self.right_child_add_prefix(str(self.right_child))
         return result
 
     def left_child_add_prefix(self, text):
@@ -59,7 +61,7 @@ class Node:
         for x in lines[1:]:
             if x:
                 new_text += "    |      " + x + "\n"
-        return new_text.rstrip()
+        return (new_text)
 
     def right_child_add_prefix(self, text):
         """Add a prefix to the right of the decision tree"""
@@ -68,7 +70,7 @@ class Node:
         for x in lines[1:]:
             if x:
                 new_text += "           " + x + "\n"
-        return new_text.rstrip()
+        return (new_text)
 
 
 class Leaf(Node):
