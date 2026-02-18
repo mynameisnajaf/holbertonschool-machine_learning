@@ -47,7 +47,7 @@ class Node:
         else:
             prefix = "-> node"
 
-        result = f"{prefix} [feature={self.feature}, threshold={self.threshold}]\n"
+        result = f"{prefix} [feature={self.feature}, threshold={self.threshold}]"
         result += self.left_child_add_prefix(self.left_child.__str__())
         result += self.right_child_add_prefix(self.right_child.__str__())
         return result
