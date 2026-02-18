@@ -41,39 +41,34 @@ class Node:
         else:
             return 1 + left + right
 
+    def __str__(self):
+        """string representation of a node in the decision tree"""
+        if self.is_leaf:
+            return f"{self.left_child}\n"
+        else:
+            left_str = f'{self.left_child}' if self.left_child else ''
+            right_str = f'{self.right_child}' if self.right_child else ''
+            return (f"[feature={self.feature}, threshold={self.threshold}]\n" +
+                    self.left_child_add_prefix(left_str) +
+                    self.right_child_add_prefix(right_str))
+
     def left_child_add_prefix(self, text):
         """Add a prefix to the left of the decision tree"""
         lines = text.split("\n")
-        new_text = "+---> " + lines[0] + "\n"
+        new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
-            if x.strip() != "":
-                new_text += "| " + x + "\n"
+            if x:
+                new_text += ("    |  " + x) + "\n"
         return new_text
 
     def right_child_add_prefix(self, text):
         """Add a prefix to the right of the decision tree"""
         lines = text.split("\n")
-        new_text = "+---> " + lines[0] + "\n"
+        new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
-            if x.strip() != "":
-                new_text += "| " + x + "\n"
+            if x:
+                new_text += ("       " + x) + "\n"
         return new_text
-
-    def __str__(self):
-        if self.is_root:
-            text = f"root [feature={self.feature}, threshold={self.threshold}]\n"
-        else:
-            text = f"node [feature={self.feature}, threshold={self.threshold}]"
-
-        if self.left_child:
-            left_text = str(self.left_child).rstrip()
-            text += self.left_child_add_prefix(left_text)
-
-        if self.right_child:
-            right_text = str(self.right_child).rstrip()
-            text += self.right_child_add_prefix(right_text)
-
-        return text.rstrip()
 
 
 class Leaf(Node):
