@@ -43,11 +43,10 @@ class Node:
 
     def __str__(self):
         if self.is_root:
-            prefix = "root"
+            result = f"root [feature={self.feature}, threshold={self.threshold}]\n"
         else:
-            prefix = "node"
+            result = f"-> node [feature={self.feature}, threshold={self.threshold}]\n"
 
-        result = f"{prefix} [feature={self.feature}, threshold={self.threshold}]\n"
         result += left_child_add_prefix(self.left_child.__str__())
         result += right_child_add_prefix(self.right_child.__str__())
         return result
@@ -72,7 +71,7 @@ class Leaf(Node):
 
     def __str__(self):
         """Return a string representation of the decision tree"""
-        return (f"-> leaf [value={self.value}]")
+        return (f"-> Leaf [value={self.value}]")
 
 
 class Decision_Tree():
@@ -112,15 +111,17 @@ class Decision_Tree():
 
 def left_child_add_prefix(text):
     lines = text.split("\n")
-    new_text = "    +---> " + lines[0] + "\n"
+    new_text = "    +--" + lines[0] + "\n"
     for x in lines[1:]:
-        new_text += "    |      " + x + "\n"
+        if x:
+            new_text += "    |      " + x + "\n"
     return new_text
 
 
 def right_child_add_prefix(text):
     lines = text.split("\n")
-    new_text = "    +---> " + lines[0] + "\n"
+    new_text = "    +--" + lines[0] + "\n"
     for x in lines[1:]:
-        new_text += "           " + x + "\n"
+        if x:
+            new_text += "           " + x + "\n"
     return new_text
