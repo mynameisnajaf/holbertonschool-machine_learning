@@ -47,7 +47,7 @@ class Node:
         else:
             prefix = "-> node"
 
-        result = f"{prefix} [feature={self.feature}, threshold={self.threshold}]"
+        result = f"{prefix} [feature={self.feature}, threshold={self.threshold}]\n"
         result += self.left_child_add_prefix(self.left_child.__str__())
         result += self.right_child_add_prefix(self.right_child.__str__())
         return result
@@ -56,14 +56,16 @@ class Node:
         lines = text.split("\n")
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
-            new_text += ("    |  " + x) + "\n"
+            if x.strip():
+                new_text += ("    |  " + x) + "\n"
         return (new_text)
 
     def right_child_add_prefix(self, text):
         lines = text.split("\n")
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
-            new_text += ("       " + x) + "\n"
+            if x.strip():
+                new_text += ("       " + x) + "\n"
         return (new_text)
 
 
