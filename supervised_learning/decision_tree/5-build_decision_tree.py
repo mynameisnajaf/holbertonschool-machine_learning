@@ -104,11 +104,19 @@ class Node:
     def update_indicator(self):
         def is_large_enough(x):
             # Check all features against lower bounds
-            return np.all(np.array([np.greater(x[:, key], self.lower[key]) for key in self.lower.keys()]), axis=0)
+            return np.all(
+                np.array(
+                    [np.greater(x[:, key],
+                                self.lower[key]) for key in self.lower.keys()]),
+                axis=0)
 
         def is_small_enough(x):
             # Check all features against upper bounds
-            return np.all(np.array([np.less_equal(x[:, key], self.upper[key]) for key in self.upper.keys()]), axis=0)
+            return np.all(
+                np.array(
+                    [np.less_equal(x[:, key],
+                                   self.upper[key]) for key in self.upper.keys()]),
+                axis=0)
 
         # Combine element-wise (logical AND)
         self.indicator = lambda x: is_large_enough(x) & is_small_enough(x)
