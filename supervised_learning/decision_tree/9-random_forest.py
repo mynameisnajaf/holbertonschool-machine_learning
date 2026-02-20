@@ -1,4 +1,4 @@
-#!usr/bin/env/python3
+#!/usr/bin/env python3
 """Nice Random"""
 Decision_Tree = __import__('8-build_decision_tree').Decision_Tree
 import numpy as np
@@ -44,13 +44,15 @@ class Random_Forest() :
         accuracies =[]
         for i in range(n_trees):
             T = Decision_Tree(max_depth=self.max_depth,
-                              min_pop=self.min_pop,seed=self.seed+i)
-            T.fit(explanatory,target)
+                              min_pop=self.min_pop,
+                              seed=self.seed+i)
+            T.fit(explanatory, target)
             self.numpy_preds.append(T.predict)
             depths.append(    T.depth()                         )
             nodes.append(     T.count_nodes()                   )
             leaves.append(    T.count_nodes(only_leaves=True)   )
-            accuracies.append(T.accuracy(T.explanatory,T.target))
+            accuracies.append(T.accuracy(T.explanatory,
+                                         T.target))
         if verbose==1:
             print(f"""  Training finished.
     - Mean depth                     : { np.array(depths).mean()      }
