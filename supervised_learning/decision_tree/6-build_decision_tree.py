@@ -221,4 +221,5 @@ class Decision_Tree():
         )
 
     def pred(self, x):
+        """Prediction"""
         return self.root.pred(x)
