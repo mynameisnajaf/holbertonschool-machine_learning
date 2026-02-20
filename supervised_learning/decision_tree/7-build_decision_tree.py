@@ -266,7 +266,7 @@ class Decision_Tree():
         return feature, threshold
 
     def fit_node(self, node):
-
+        """Fitting the node"""
         node.feature, node.threshold = self.split_criterion(node)
 
         left_population = node.sub_population & (
