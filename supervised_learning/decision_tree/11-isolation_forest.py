@@ -5,6 +5,7 @@ Isolation_Random_Tree = __import__('10-isolation_tree').Isolation_Random_Tree
 
 
 class Isolation_Random_Forest():
+    """ Isolation_Random_Forest"""
     def __init__(self, n_trees=100, max_depth=10, min_pop=1, seed=0):
         self.numpy_predicts = []
         self.target = None
@@ -14,10 +15,12 @@ class Isolation_Random_Forest():
         self.seed = seed
 
     def predict(self, explanatory):
+        """ predicts the target """
         predictions = np.array([f(explanatory) for f in self.numpy_preds])
         return predictions.mean(axis=0)
 
     def fit(self, explanatory, n_trees=100, verbose=0):
+        """ fits the random forest to explanatory data """
         self.explanatory = explanatory
         self.numpy_preds = []
         depths = []
