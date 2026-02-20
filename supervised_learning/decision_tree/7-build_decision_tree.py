@@ -253,8 +253,12 @@ class Decision_Tree():
         """Random split criterion"""
         diff = 0
         while diff == 0:
-            feature = self.rng.integers(0, self.explanatory.shape[1])
-            feature_min, feature_max = self.np_extrema(self.explanatory[:, feature][node.sub_population])
+            feature = self.rng.integers(
+                0,
+                self.explanatory.shape[1])
+            feature_min, feature_max = self.np_extrema(
+                self.explanatory[:, feature]
+                [node.sub_population])
             diff = feature_max - feature_min
         x = self.rng.uniform()
         threshold = (1 - x) * feature_min + x * feature_max
@@ -298,7 +302,6 @@ class Decision_Tree():
             node.right_child = self.get_node_child(node, right_population)
             self.fit_node(node.right_child)
 
-
     def get_leaf_child(self, node, sub_population):
         """Getting leaf child"""
         value = np.bincount(self.target[sub_population]).argmax()
@@ -307,7 +310,6 @@ class Decision_Tree():
         leaf_child.subpopulation = sub_population
         return leaf_child
 
-
     def get_node_child(self, node, sub_population):
         """Getting node child"""
         n = Node()
@@ -315,7 +317,8 @@ class Decision_Tree():
         n.sub_population = sub_population
         return n
 
-
     def accuracy(self, test_explanatory, test_target):
         """Accuracy"""
-        return np.sum(np.equal(self.predict(test_explanatory), test_target)) / test_target.size
+        return np.sum(np.equal(
+            self.predict(test_explanatory),
+                test_target)) / test_target.size
