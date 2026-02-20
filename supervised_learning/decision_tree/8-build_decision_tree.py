@@ -353,6 +353,7 @@ class Decision_Tree():
             right_y = c[right_mask]
 
             def gini(labels):
+                """Function for labels"""
                 if labels.size == 0:
                     return 0
                 probs = np.bincount(labels) / labels.size
