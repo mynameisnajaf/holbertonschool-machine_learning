@@ -325,6 +325,7 @@ class Decision_Tree():
             test_target)) / test_target.size
 
     def possible_thresholds(self, node, feature):
+        """Possible thresholds"""
         values = np.unique((self.explanatory[:, feature])[node.sub_population])
         return (values[1:] + values[:-1]) / 2
 
@@ -377,6 +378,8 @@ class Decision_Tree():
 
     def Gini_split_criterion(self, node):
         """Gini split criterion"""
-        X = np.array([self.Gini_split_criterion_one_feature(node, i) for i in range(self.explanatory.shape[1])])
+        X = np.array([
+            self.Gini_split_criterion_one_feature(node, i)
+            for i in range(self.explanatory.shape[1])])
         i = np.argmin(X[:, 1])
         return i, X[i, 0]
