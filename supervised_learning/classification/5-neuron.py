@@ -55,7 +55,7 @@ class Neuron:
         """Gradient descent method"""
         m = Y.shape[1]
         dz = (A - Y)
-        dw = (1 / m) * (np.matmul(X, dz.transpose().transpose()))
+        dw = (1 / m) * (np.matmul(X, dz.transpose()).transpose())
         db = (1 / m) * np.sum(dz)
         self.__W = self.W - (alpha * dw)
         self.__b = self.b - (alpha * db)
