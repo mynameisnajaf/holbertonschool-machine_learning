@@ -77,7 +77,7 @@ class DeepNeuralNetwork:
     def gradient_descent(self, Y, cache, alpha=0.05):
         """Gradient descent"""
         m = Y.shape[1]
-        dz = (cache[self.__L] - Y)
+        dz = (cache[f'A{self.__L}'] - Y)
 
         for lay in reversed(range(self.__L)):
             A_prev = self.__cache['A{}'.format(lay)]
