@@ -14,7 +14,12 @@ class DeepNeuralNetwork():
     """
 
     def __init__(self, nx, layers, activation='sig'):
-        """Constructor"""
+        """
+
+        Args:
+            nx: input value
+            nodes: nodes placed in the hidden layer
+        """
 
         if type(nx) is not int:
             raise TypeError("nx must be an integer")
@@ -24,15 +29,15 @@ class DeepNeuralNetwork():
             raise TypeError("layers must be a list of positive integers")
         if len(layers) == 0:
             raise TypeError("layers must be a list of positive integers")
-        if activation != "sig" and activation != "tanh":
+        if activation != 'sig' and activation != 'tanh':
             raise ValueError("activation must be 'sig' or 'tanh'")
 
         self.__L = len(layers)
         self.__cache = {}
-        self.__activation = activation
         self.__weights = {}
+        self.__activation = activation
         for lay in range(self.L):
-            if layers[lay] < 1 or type(layers[lay]) is not int:
+            if layers[lay] <= 0 or type(layers[lay]) is not int:
                 raise TypeError("layers must be a list of positive integers")
             self.__weights["b" + str(lay + 1)] = np.zeros((layers[lay], 1))
             if lay == 0:
@@ -46,61 +51,116 @@ class DeepNeuralNetwork():
 
     @property
     def L(self):
-        """Getter attr"""
+        """
+        Getter attr
+
+        Returns: Private instance number of layers
+
+        """
         return self.__L
 
     @property
     def cache(self):
-        """Getter attr"""
+        """
+        Getter attr
+
+        Returns: Private instance decit that hold intermediates
+        values of the network
+
+        """
         return self.__cache
 
     @property
     def weights(self):
-        """Getter attr"""
+        """
+        Getter attr
+        Returns: Private instance holds weights and biases
+
+        """
         return self.__weights
 
     @property
     def activation(self):
-        """Getter attr"""
+        """
+        Getter attr
+        Returns: Private instance holds activation function
+
+        """
         return self.__activation
 
     def forward_prop(self, X):
-        """Forward propagation function"""
+        """
+        Forward propagation function
+        Args:
+            X: x numpy array with shape (nx, m)
+
+        Returns: forward propagation
+
+        """
         self.__cache["A0"] = X
         for lay in range(self.__L):
             weights = self.__weights
             cache = self.__cache
+            activ = self.__activation
             Za = np.matmul(weights["W" + str(lay + 1)], cache["A" + str(lay)])
             Z = Za + weights["b" + str(lay + 1)]
             if lay == self.__L - 1:
-                p1 = np.exp(Z)
-                self.__cache["A" + str(lay + 1)] = (p1 / np.sum(
-                    p1, axis=0, keepdims=True))
+                t = np.exp(Z)
+                # softmax activation
+                cache["A" + str(lay + 1)] = (t / np.sum(
+                    t, axis=0, keepdims=True))
             else:
-                if self.__activation == "sig":
+                if activ == 'sig':
                     cache["A" + str(lay + 1)] = 1 / (1 + np.exp(-Z))
                 else:
                     cache["A" + str(lay + 1)] = np.tanh(Z)
-        return cache["A" + str(self.__L)], cache
+        return cache["A" + str(lay + 1)], cache
 
     def cost(self, Y, A):
-        """Cost function"""
+        """
+        Cost function using binary cross-entropy
+        Args:
+            Y: Y hat, slope
+            A: Activated neuron output
+
+        Returns: Cost value, efficiency when C = 0
+
+        """
 
         m = Y.shape[1]
         C = (-1 / m) * np.sum(Y * np.log(A))
         return C
 
     def evaluate(self, X, Y):
-        """Evaluation function"""
+        """
 
+        Args:
+            X: input neuron, shape (nx, m)
+            Y: Correct labels for the input data
+
+        Returns: The neuron prediction and the cost
+                of the network
+        """
+        self.forward_prop(X)
         cache = self.__cache
-        A, cache = self.forward_prop(X)
-        cost = self.cost(Y, A)
-        prediction = np.where(A >= 0.5, 1, 0)
+        cost = self.cost(Y, cache["A" + str(self.__L)])
+        mc = np.amax(cache["A" + str(self.__L)], axis=0)
+        # broadcasting
+        prediction = np.where(cache["A" + str(self.__L)] == mc, 1, 0)
         return prediction, cost
 
     def gradient_descent(self, Y, cache, alpha=0.05):
-        """Gradient"""
+        """
+
+        Args:
+            X: input neuron, shape (nx, m)
+            Y: Correct labels vector
+            cache: Activated neurons in n layer
+            alpha: learning rate
+
+        Returns: gradient descent bias + adjusted weights
+
+        """
         m = Y.shape[1]
         tW = self.__weights.copy()
         for i in reversed(range(self.__L)):
@@ -132,7 +192,21 @@ class DeepNeuralNetwork():
 
     def train(self, X, Y, iterations=5000, alpha=0.05,
               verbose=True, graph=True, step=100):
-        """Training"""
+        """
+
+        Args:
+            step: Boolean of iterations in the model
+            graph: Boolean of value of iterations against cost
+            verbose: Boolean of string text print of cost
+            X: input neuron, shape (nx, m)
+            Y: Correct labels vector
+            iterations: number of iterations to optimize the parameters
+            alpha: learning rate
+
+        Returns: output optimized and cost of training
+
+        """
+
         if type(iterations) is not int:
             raise TypeError("iterations must be an integer")
         if iterations < 0:
@@ -153,12 +227,12 @@ class DeepNeuralNetwork():
             if i % step == 0 or i == iterations:
                 temp_cost.append(cost)
                 temp_iterations.append(i)
-                if verbose:
+                if verbose is True:
                     print("Cost after {} iterations: {}".format(i, cost))
             if i < iterations:
                 self.gradient_descent(Y, self.__cache, alpha)
 
-        if graph:
+        if graph is True:
             plt.title("Training Cost")
             plt.xlabel("iteration")
             plt.ylabel("cost")
@@ -167,7 +241,14 @@ class DeepNeuralNetwork():
         return self.evaluate(X, Y)
 
     def save(self, filename):
-        """Saving"""
+        """
+
+        Args:
+            filename: pickle file
+
+        Returns: saved object
+
+        """
         if '.pkl' not in filename:
             filename += '.pkl'
 
@@ -177,7 +258,14 @@ class DeepNeuralNetwork():
 
     @staticmethod
     def load(filename):
-        """Loading"""
+        """
+
+        Args:
+            filename: pickle file
+
+        Returns: Objects loaded
+
+        """
         try:
             with open(filename, 'rb') as f:
                 fileOpen = pickle.load(f)
