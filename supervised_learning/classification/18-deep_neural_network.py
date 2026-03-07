@@ -50,12 +50,12 @@ class DeepNeuralNetwork:
         """Forward propagation"""
         self.__cache['A0'] = X
         for lay in range(self.__L):
-            W = self.__weights['W{}'.format(lay)]
-            b = self.__weights['b{}'.format(lay)]
-            A_prev = self.__cache['A{}'.format(lay - 1)]
+            W = self.__weights['W{}'.format(lay + 1)]
+            b = self.__weights['b{}'.format(lay + 1)]
+            A_prev = self.__cache['A{}'.format(lay)]
 
             Z = np.dot(W, A_prev) + b
             A = 1 / (1 + np.exp(-Z))
-            self.__cache['A{}'.format(lay)] = A
+            self.__cache['A{}'.format(lay + 1)] = A
 
         return A, self.__cache
