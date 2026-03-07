@@ -75,20 +75,24 @@ class DeepNeuralNetwork:
         return prediction, cost
 
     def gradient_descent(self, Y, cache, alpha=0.05):
-        """Gradient descent for deep neural network"""
+        """Gradient descent"""
         m = Y.shape[1]
-        dz = cache[f'A{self.__L}'] - Y
-
-        for lay in reversed(range(self.__L)):
-            A_prev = cache[f'A{lay}']
-            W = self.__weights[f'W{lay + 1}']
-
-            dw = (1 / m) * np.matmul(dz, A_prev.T)
-            db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
-
-            self.__weights[f'W{lay + 1}'] -= alpha * dw
-            self.__weights[f'b{lay + 1}'] -= alpha * db
-
-            if lay > 0:
-                A = cache[f'A{lay}']
-                dz = np.matmul(W.T, dz) * (A * (1 - A))
+        for i in reversed(range(self.__L)):
+            w = 'W' + str(i + 1)
+            b = 'b' + str(i + 1)
+            a = 'A' + str(i + 1)
+            a_0 = 'A' + str(i)
+            A = cache[a]
+            A_0 = cache[a_0]
+            if i == self.__L - 1:
+                dz = A - Y
+                W = self.__weights[w]
+            else:
+                da = A * (1 - A)
+                dz = np.matmul(W.T, dz)
+                dz = dz * da
+                W = self.__weights[w]
+            dw = np.matmul(A_0, dz.T) / m
+            db = np.sum(dz, axis=1, keepdims=True) / m
+            self.__weights[w] = self.__weights[w] - alpha * dw.T
+            self.__weights[b] = self.__weights[b] - alpha * db
