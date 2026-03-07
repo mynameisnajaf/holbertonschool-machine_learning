@@ -54,7 +54,6 @@ class DeepNeuralNetwork:
 
             # Softmax for last layer, sigmoid otherwise
             if lay == self.__L - 1:
-                # Subtract max for numerical stability
                 exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
                 A = exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
             else:
@@ -67,9 +66,8 @@ class DeepNeuralNetwork:
     def cost(self, Y, A):
         """Categorical cross-entropy cost"""
         m = Y.shape[1]
-        # Add epsilon to avoid log(0)
-        cost = -np.sum(Y * np.log(A + 1e-8)) / m
-        return cost
+        C = (-1 / m) * np.sum(Y * np.log(A))
+        return C
 
     def evaluate(self, X, Y):
         """Evaluate predictions for multiclass classification"""
