@@ -43,5 +43,5 @@ class DeepNeuralNetwork:
         return self.__cache
 
     @property
-    def layers(self):
+    def L(self):
         return self.__L
