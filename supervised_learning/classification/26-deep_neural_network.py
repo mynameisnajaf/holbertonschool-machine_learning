@@ -142,15 +142,15 @@ class DeepNeuralNetwork:
 
     def save(self, filename):
         """Save the model"""
-        if ".pkl" in filename:
+        if not filename.endswith(".pkl"):
             filename += ".pkl"
 
         file = open(filename, "wb")
-        pickle.dump(self.__weights, file)
+        pickle.dump(self, file)
         file.close()
 
     @staticmethod
-    def load(self, filename):
+    def load(filename):
         """Load the model"""
         try:
             with open(filename, "rb") as file:
