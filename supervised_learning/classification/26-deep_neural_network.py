@@ -100,7 +100,8 @@ class DeepNeuralNetwork:
             self.__weights[w] = self.__weights[w] - alpha * dw.T
             self.__weights[b] = self.__weights[b] - alpha * db
 
-    def train(self, X, Y, iterations=5000, alpha=0.05, verbose=True, graph=True, step=100):
+    def train(self, X, Y, iterations=5000, alpha=0.05,
+              verbose=True, graph=True, step=100):
         """Train the model"""
         if not isinstance(iterations, int):
             raise TypeError("iterations must be an integer")
