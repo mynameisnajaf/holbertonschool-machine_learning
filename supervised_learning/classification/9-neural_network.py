@@ -25,6 +25,7 @@ class NeuralNetwork:
         self.__b2 = 0
         self.__A2 = 0
 
+    @property
     def w1_getter(self):
         """Get the weights of the first layer"""
         return self.__W1
