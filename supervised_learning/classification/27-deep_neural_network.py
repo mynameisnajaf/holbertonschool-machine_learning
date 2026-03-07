@@ -47,21 +47,16 @@ class DeepNeuralNetwork:
         """Forward propagation"""
         self.__cache['A0'] = X
         for lay in range(self.__L):
-            W = self.__weights[f"W{lay + 1}"]
-            b = self.__weights[f"b{lay + 1}"]
-            A_prev = self.__cache[f"A{lay}"]
-            Z = np.dot(W, A_prev) + b
-
-            # Softmax for last layer, sigmoid otherwise
+            Z = np.matmul(self.__weights["W" + str(lay + 1)], self.__cache["A" + str(lay)])
+            Z = Z + self.__weights["b" + str(lay + 1)]
             if lay == self.__L - 1:
-                exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
-                A = exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
+                p1 = np.exp(Z)
+                self.__cache["A" + str(lay + 1)] = p1 / np.sum(p1, axis=0, keepdims=True)  # softmax
             else:
-                A = 1 / (1 + np.exp(-Z))
+                self.__cache["A" + str(lay + 1)] = 1 / (1 + np.exp(-Z))
 
-            self.__cache[f"A{lay + 1}"] = A
-
-        return A, self.__cache
+        A_L = self.__cache[f"A{self.__L}"]
+        return A_L, self.__cache
 
     def cost(self, Y, A):
         """Categorical cross-entropy cost"""
@@ -71,9 +66,10 @@ class DeepNeuralNetwork:
 
     def evaluate(self, X, Y):
         """Evaluate predictions for multiclass classification"""
-        A, _ = self.forward_prop(X)
+        cache = self.__cache
+        A, cache = self.forward_prop(X)
         cost = self.cost(Y, A)
-        prediction = np.argmax(A, axis=0)
+        prediction = np.where(A >= 0.5, 1, 0)
         return prediction, cost
 
     def gradient_descent(self, Y, cache, alpha=0.05):
