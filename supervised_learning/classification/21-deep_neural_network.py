@@ -90,5 +90,5 @@ class DeepNeuralNetwork:
             self.__weights[f'b{lay + 1}'] -= alpha * db
 
             if lay > 0:
-                A_prev = cache[f'A{lay}']
-                dz = np.matmul(W.T, dz) * (A_prev * (1 - A_prev))
+                A = cache[f'A{lay}']
+                dz = np.matmul(W.T, dz) * (A * (1 - A))
