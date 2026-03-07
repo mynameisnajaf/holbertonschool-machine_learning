@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
 import pickle
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -57,11 +58,7 @@ class DeepNeuralNetwork:
             A_prev = self.__cache['A{}'.format(lay)]
 
             Z = np.dot(W, A_prev) + b
-            if lay == self.__L - 1:
-                exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))  # for numerical stability
-                A = exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
-            else:
-                A = 1 / (1 + np.exp(-Z))
+            A = 1 / (1 + np.exp(-Z))
             self.__cache['A{}'.format(lay + 1)] = A
 
         return A, self.__cache
@@ -69,15 +66,15 @@ class DeepNeuralNetwork:
     def cost(self, Y, A):
         """Cost function"""
         m = Y.shape[1]
-        cost = -(1 / m) * np.sum((Y * np.log(A)))
+        m_loss = np.sum((Y * np.log(A)) + ((1 - Y) * np.log(1.0000001 - A)))
+        cost = (1 / m) * (-m_loss)
         return cost
 
     def evaluate(self, X, Y):
         """Evaluate the cost function"""
         A, _ = self.forward_prop(X)
         cost = self.cost(Y, A)
-        prediction = np.argmax(A, axis=0)
-        Y_true = np.argmax(Y, axis=0)
+        prediction = np.where(A >= 0.5, 1, 0)
         return prediction, cost
 
     def gradient_descent(self, Y, cache, alpha=0.05):
