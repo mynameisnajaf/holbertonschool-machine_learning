@@ -77,10 +77,9 @@ class DeepNeuralNetwork:
     def gradient_descent(self, Y, cache, alpha=0.05):
         """Gradient descent for deep neural network"""
         m = Y.shape[1]
-        L = self.__L
-        dz = cache[f'A{L}'] - Y
+        dz = cache[f'A{self.__L}'] - Y
 
-        for lay in reversed(range(L)):
+        for lay in reversed(range(self.__L)):
             A_prev = cache[f'A{lay}']
             W = self.__weights[f'W{lay + 1}']
 
@@ -91,4 +90,5 @@ class DeepNeuralNetwork:
             self.__weights[f'b{lay + 1}'] -= alpha * db
 
             if lay > 0:
+                A_prev = cache[f'A{lay}']
                 dz = np.matmul(W.T, dz) * (A_prev * (1 - A_prev))
