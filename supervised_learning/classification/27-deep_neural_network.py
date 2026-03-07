@@ -69,7 +69,7 @@ class DeepNeuralNetwork:
         cache = self.__cache
         A, cache = self.forward_prop(X)
         cost = self.cost(Y, A)
-        prediction = np.argmax(A, axis=0)
+        prediction = np.where(A >= 0.5, 1, 0)
         return prediction, cost
 
     def gradient_descent(self, Y, cache, alpha=0.05):
@@ -83,18 +83,18 @@ class DeepNeuralNetwork:
             A = cache[a]
             A_prev = cache[a_prev]
 
-            if i == self.__L - 1:
+            if i == self.__L - 1:  # last layer softmax
                 dz = A - Y
-                W = self.__weights[w]
-            else:
-                da = A * (1 - A)
-                dz = np.dot(W.T, dz) * da
-                W = self.__weights[w]
+            else:  # hidden layer sigmoid
+                dz = np.dot(W_next.T, dz) * (A * (1 - A))
 
             dw = np.dot(dz, A_prev.T) / m
             db = np.sum(dz, axis=1, keepdims=True) / m
+
             self.__weights[w] -= alpha * dw
             self.__weights[b] -= alpha * db
+
+            W_next = self.__weights[w]
 
     def train(self, X, Y, iterations=5000, alpha=0.05,
               verbose=True, graph=True, step=100):
