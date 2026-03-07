@@ -20,16 +20,16 @@ class DeepNeuralNetwork:
         self.L = len(layers)
         self.cache = {}
         self.weights = {}
-        for l in range(self.L):
-            if layers[l] < 1 or not isinstance(layers[l], int):
+        for lay in range(self.L):
+            if layers[lay] < 1 or not isinstance(layers[lay], int):
                 raise TypeError("layers must be a list of positive integers")
 
-            if l == 0:
+            if lay == 0:
                 prev = nx
             else:
-                prev = layers[l - 1]
-            self.weights['W{}'.format(l + 1)] = (
-                np.random.randn(layers[l], prev) * np.sqrt(2 / prev)
+                prev = layers[lay - 1]
+            self.weights['W{}'.format(lay + 1)] = (
+                np.random.randn(layers[lay], prev) * np.sqrt(2 / prev)
             )
 
-            self.weights['b{}'.format(l + 1)] = np.zeros((layers[l], 1))
+            self.weights['b{}'.format(lay + 1)] = np.zeros((layers[lay], 1))
