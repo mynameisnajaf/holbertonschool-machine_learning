@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""A module that does the trick"""
+"""Deep Neural Network for multiclass classification"""
 import pickle
-
 import numpy as np
 import matplotlib.pyplot as plt
 
 
 class DeepNeuralNetwork:
-    """A class that does the trick"""
+    """Deep Neural Network supporting multiclass classification"""
 
     def __init__(self, nx, layers):
         """Constructor"""
@@ -27,15 +26,10 @@ class DeepNeuralNetwork:
             if layers[lay] < 1 or not isinstance(layers[lay], int):
                 raise TypeError("layers must be a list of positive integers")
 
-            if lay == 0:
-                prev = nx
-            else:
-                prev = layers[lay - 1]
-            self.__weights['W{}'.format(lay + 1)] = (
-                np.random.randn(layers[lay], prev) * np.sqrt(2 / prev)
-            )
-
-            self.__weights['b{}'.format(lay + 1)] = np.zeros((layers[lay], 1))
+            prev = nx if lay == 0 else layers[lay - 1]
+            # He initialization
+            self.__weights[f"W{lay + 1}"] = np.random.randn(layers[lay], prev) * np.sqrt(2 / prev)
+            self.__weights[f"b{lay + 1}"] = np.zeros((layers[lay], 1))
 
     @property
     def weights(self):
@@ -53,109 +47,113 @@ class DeepNeuralNetwork:
         """Forward propagation"""
         self.__cache['A0'] = X
         for lay in range(self.__L):
-            W = self.__weights['W{}'.format(lay + 1)]
-            b = self.__weights['b{}'.format(lay + 1)]
-            A_prev = self.__cache['A{}'.format(lay)]
-
+            W = self.__weights[f"W{lay + 1}"]
+            b = self.__weights[f"b{lay + 1}"]
+            A_prev = self.__cache[f"A{lay}"]
             Z = np.dot(W, A_prev) + b
-            A = 1 / (1 + np.exp(-Z))
-            self.__cache['A{}'.format(lay + 1)] = A
+
+            # Softmax for last layer, sigmoid otherwise
+            if lay == self.__L - 1:
+                # Subtract max for numerical stability
+                exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
+                A = exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
+            else:
+                A = 1 / (1 + np.exp(-Z))
+
+            self.__cache[f"A{lay + 1}"] = A
 
         return A, self.__cache
 
     def cost(self, Y, A):
-        """Cost function"""
+        """Categorical cross-entropy cost"""
         m = Y.shape[1]
-        m_loss = np.sum((Y * np.log(A)) + ((1 - Y) * np.log(1.0000001 - A)))
-        cost = (1 / m) * (-m_loss)
+        # Add epsilon to avoid log(0)
+        cost = -np.sum(Y * np.log(A + 1e-8)) / m
         return cost
 
     def evaluate(self, X, Y):
-        """Evaluate the cost function"""
+        """Evaluate predictions for multiclass classification"""
         A, _ = self.forward_prop(X)
         cost = self.cost(Y, A)
-        prediction = np.where(A >= 0.5, 1, 0)
+        prediction = np.argmax(A, axis=0)
         return prediction, cost
 
     def gradient_descent(self, Y, cache, alpha=0.05):
-        """Gradient descent"""
+        """Gradient descent (works for softmax last layer)"""
         m = Y.shape[1]
         for i in reversed(range(self.__L)):
-            w = 'W' + str(i + 1)
-            b = 'b' + str(i + 1)
-            a = 'A' + str(i + 1)
-            a_0 = 'A' + str(i)
+            w = f"W{i + 1}"
+            b = f"b{i + 1}"
+            a = f"A{i + 1}"
+            a_prev = f"A{i}"
             A = cache[a]
-            A_0 = cache[a_0]
+            A_prev = cache[a_prev]
+
             if i == self.__L - 1:
                 dz = A - Y
                 W = self.__weights[w]
             else:
                 da = A * (1 - A)
-                dz = np.matmul(W.T, dz)
-                dz = dz * da
+                dz = np.dot(W.T, dz) * da
                 W = self.__weights[w]
-            dw = np.matmul(A_0, dz.T) / m
+
+            dw = np.dot(dz, A_prev.T) / m
             db = np.sum(dz, axis=1, keepdims=True) / m
-            self.__weights[w] = self.__weights[w] - alpha * dw.T
-            self.__weights[b] = self.__weights[b] - alpha * db
+            self.__weights[w] -= alpha * dw
+            self.__weights[b] -= alpha * db
 
     def train(self, X, Y, iterations=5000, alpha=0.05,
               verbose=True, graph=True, step=100):
-        """Train the model"""
+        """Train the network"""
         if not isinstance(iterations, int):
             raise TypeError("iterations must be an integer")
         if iterations <= 0:
             raise ValueError("iterations must be a positive integer")
-
         if not isinstance(alpha, float):
             raise TypeError("alpha must be a float")
         if alpha <= 0:
             raise ValueError("alpha must be positive")
-
         if verbose or graph:
             if not isinstance(step, int):
                 raise TypeError("step must be an integer")
-            if step <= 0 and step <= iterations:
+            if step <= 0 or step > iterations:
                 raise ValueError("step must be positive and <= iterations")
 
-        temp_cost = []
-        temp_iterations = []
+        costs = []
+        steps = []
+
         for i in range(iterations + 1):
             A, cache = self.forward_prop(X)
             cost = self.cost(Y, A)
             if i % step == 0 or i == iterations:
-                temp_cost.append(cost)
-                temp_iterations.append(i)
+                costs.append(cost)
+                steps.append(i)
                 if verbose:
-                    print("Cost after {} iterations: {}".format(i, cost))
+                    print(f"Cost after {i} iterations: {cost}")
             if i < iterations:
                 self.gradient_descent(Y, cache, alpha)
 
         if graph:
-            plt.plot(temp_iterations, temp_cost, "b")
+            plt.plot(steps, costs, 'b')
             plt.xlabel("iteration")
             plt.ylabel("cost")
-            plt.title("Training cost")
+            plt.title("Training Cost")
             plt.show()
 
         return self.evaluate(X, Y)
 
     def save(self, filename):
-        """Save the model"""
+        """Save model to file"""
         if not filename.endswith(".pkl"):
             filename += ".pkl"
-
-        file = open(filename, "wb")
-        pickle.dump(self, file)
-        file.close()
+        with open(filename, "wb") as f:
+            pickle.dump(self, f)
 
     @staticmethod
     def load(filename):
-        """Load the model"""
+        """Load model from file"""
         try:
-            with open(filename, "rb") as file:
-                file = pickle.load(file)
-            return file
+            with open(filename, "rb") as f:
+                return pickle.load(f)
         except FileNotFoundError:
             return None
