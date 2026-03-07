@@ -26,26 +26,31 @@ class NeuralNetwork:
         self.__A2 = 0
 
     @property
-    def w1_getter(self):
+    def W1(self):
         """Get the weights of the first layer"""
         return self.__W1
 
-    def b1_getter(self):
-        """Get the biases of the first layer"""
-        return self.__b1
-
-    def w2_getter(self):
+    @property
+    def W2(self):
         """Get the weights of the second layer"""
         return self.__W2
 
-    def b2_getter(self):
-        """Get the biases of the second layer"""
+    @property
+    def b1(self):
+        """Get the biases of the first layer"""
+        return self.__b1
+
+    @property
+    def b2(self):
+        """Get the biases of the first layer"""
         return self.__b2
 
-    def a2_getter(self):
+    @property
+    def A2(self):
         """Get the activation function of the second layer"""
         return self.__A2
 
-    def a1_getter(self):
-        """Get the activation function of the first layer"""
+    @property
+    def A1(self):
+        """Get the activation function of the second layer"""
         return self.__A1
