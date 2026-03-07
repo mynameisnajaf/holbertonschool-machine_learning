@@ -61,8 +61,9 @@ class Neuron:
         self.__W = self.W - (alpha * dw)
         self.__b = self.b - (alpha * db)
 
-    def train(self, X, Y, iterations=5000, alpha=0.05, verbose=True, graph=True, step=100):
-        """Train the neural network (UPGRADED)"""
+    def train(self, X, Y, iterations=5000, alpha=0.05,
+              verbose=True, graph=True, step=100):
+
         if not isinstance(iterations, int):
             raise TypeError("iterations must be an integer")
         if iterations <= 0:
@@ -78,28 +79,30 @@ class Neuron:
                 raise TypeError("step must be an integer")
             if step <= 0 or step > iterations:
                 raise ValueError("step must be positive and <= iterations")
-        if graph:
-            x_points = np.arange(0, iterations + 1, step)
-            points = []
-        for i in range(iterations):
-            A = self.forward_prop(X)
-            if verbose and i % step == 0:
-                print("Cost after {iteration} iterations: {cost}".
-                      format(iteration=i, cost=self.cost(Y, A)))
-            if graph and i % step == 0:
-                cost = self.cost(Y, A)
-                points.append(cost)
-            self.gradient_descent(X, Y, A, alpha)
-        i += 1
-        if verbose:
-                print("Cost after {iteration} iterations: {cost}".
-                      format(iteration=i, cost=self.cost(Y, A)))
 
         if graph:
-            cost = self.cost(Y, A)
-            points.append(cost)
-            y_points = np.asarray(points)
-            plt.plot(x_points, y_points, "b")
+            x_points = []
+            y_points = []
+
+        for i in range(iterations + 1):
+
+            A = self.forward_prop(X)
+
+            if i % step == 0:
+                cost = self.cost(Y, A)
+
+                if verbose:
+                    print(f"Cost after {i} iterations: {cost}")
+
+                if graph:
+                    x_points.append(i)
+                    y_points.append(cost)
+
+            if i < iterations:
+                self.gradient_descent(X, Y, A, alpha)
+
+        if graph:
+            plt.plot(x_points, y_points)
             plt.xlabel("iteration")
             plt.ylabel("cost")
             plt.title("Training Cost")
