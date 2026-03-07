@@ -2,6 +2,7 @@
 """A module that does the trick"""
 import numpy as np
 
+
 def one_hot_encode(Y, classes):
     """One-hot encode Y"""
     if len(Y) == 0:
