@@ -19,10 +19,11 @@ def train_model(network, data, labels, batch_size,
         callbacks.append(stop)
 
     if learning_rate_decay and validation_data is not None:
-
         def schedule(epoch, lr):
-            """Decay learning rate"""
-            return alpha / (1 + decay_rate * epoch)
+            """Inverse time decay: new_lr = alpha / (1 + decay_rate * epoch)"""
+            new_lr = alpha / (1 + decay_rate * epoch)
+            print(f"Epoch {epoch + 1}: LearningRateScheduler setting learning rate to {new_lr:.6f}")
+            return new_lr
 
         lr_decay = K.callbacks.LearningRateScheduler(schedule)
         callbacks.append(lr_decay)
