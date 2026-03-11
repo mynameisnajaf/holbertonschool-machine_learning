@@ -6,7 +6,5 @@ import tensorflow.keras as K
 
 def one_hot(labels, classes=None):
     """One-hot encoding of labels"""
-
-    ohe = np.zeros((classes, len(labels)))
-    ohe[labels, np.arange(len(labels))] = 1
+    ohe = K.utils.to_categorical(labels, num_classes=classes)
     return ohe
