@@ -5,12 +5,11 @@ import tensorflow.keras as K
 
 
 def train_model(network, data, labels, batch_size,
-                epochs, validation_data=None,
-                early_stopping=False, patience=0,
+                epochs, validation_data=None, early_stopping=False, patience=0,
+                learning_rate_decay=False, alpha=0.1, decay_rate=1,
                 verbose=True, shuffle=False):
-    """Train model with optional early stopping"""
+    """Train model"""
     callbacks = []
-
     if early_stopping and validation_data is not None:
         stop = K.callbacks.EarlyStopping(
             monitor='val_loss',
@@ -18,6 +17,15 @@ def train_model(network, data, labels, batch_size,
             restore_best_weights=True
         )
         callbacks.append(stop)
+
+    if learning_rate_decay and validation_data is not None:
+
+        def schedule(epoch, lr):
+            """Decay learning rate"""
+            return alpha / (1 + decay_rate * epoch)
+
+        lr_decay = K.callbacks.LearningRateScheduler(schedule)
+        callbacks.append(lr_decay)
 
     history = network.fit(
         data,
@@ -29,5 +37,4 @@ def train_model(network, data, labels, batch_size,
         shuffle=shuffle,
         callbacks=callbacks
     )
-
     return history
