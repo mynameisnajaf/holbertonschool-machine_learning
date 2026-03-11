@@ -2,7 +2,6 @@
 """A module for supervised learning"""
 
 import tensorflow.keras as K
-import numpy as np
 
 
 def one_hot(labels, classes=None):
