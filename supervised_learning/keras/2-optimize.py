@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+"""A model for supervised learning"""
 import tensorflow.keras as K
 
 
