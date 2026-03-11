@@ -5,9 +5,15 @@ import tensorflow.keras as K
 
 def save_config(network, filename):
     """Save config to file"""
-    network.save_config(filename)
+    model_json = network.to_json()
+    with open(filename, "w") as f:
+        f.write(model_json)
+    return None
 
 
 def load_config(filename):
     """Load config from file"""
-    return load_config(filename)
+    with open(filename, "r") as f:
+        loaded_model_json = f.read()
+    model = K.models.model_from_json(loaded_model_json)
+    return model
