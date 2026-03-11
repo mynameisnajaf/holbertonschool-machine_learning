@@ -22,7 +22,7 @@ def train_model(network, data, labels, batch_size,
         def schedule(epoch, lr):
             """Inverse time decay: new_lr = alpha / (1 + decay_rate * epoch)"""
             new_lr = alpha / (1 + decay_rate * epoch)
-            print(f"Epoch {epoch + 1}: LearningRateScheduler setting learning rate to {new_lr:.6f}")
+            print(f"Epoch {epoch + 1}: LearningRateScheduler setting learning rate to {new_lr}")
             return new_lr
 
         lr_decay = K.callbacks.LearningRateScheduler(schedule)
