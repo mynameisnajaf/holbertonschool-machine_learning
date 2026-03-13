@@ -5,7 +5,7 @@ import tensorflow as tf
 
 def create_batch_norm_layer(prev, n, activation):
     """Creates a batch normalization layer"""
-    activaion = tf.keras.initializers.VarianceScaling(mode='fan_avg')
+    activation = tf.keras.initializers.VarianceScaling(mode='fan_avg')
     layer = tf.keras.layers.Dense(n, activation=None,
                             kernel_initializer=activation, name='layer')(prev)
     mu, sigma_2 = tf.nn.moments(layer, axes=[0])
