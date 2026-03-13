@@ -6,4 +6,8 @@ import numpy as np
 
 def shuffle_data(X, Y):
     """Shuffles the data"""
-    return np.random.permutation(X), np.random.permutation(Y)
+    m = X.shape[0]
+    shuffle = np.random.permutation(m)
+    X = X[shuffle]
+    Y = Y[shuffle]
+    return X, Y
