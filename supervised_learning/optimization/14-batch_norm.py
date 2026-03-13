@@ -6,7 +6,7 @@ import tensorflow as tf
 def create_batch_norm_layer(prev, n, activation):
     """Creates a batch normalization layer"""
     dense = tf.keras.layers.Dense(units=n,
-                                  initiliazer=tf.keras.initializers.VarianceScaling(
+                                  kernel_initiliazer=tf.keras.initializers.VarianceScaling(
                                       mode='fan_avg'
                                   ),
                                   use_bias=False,
