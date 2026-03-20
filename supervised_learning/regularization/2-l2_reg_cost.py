@@ -6,10 +6,7 @@ import tensorflow as tf
 def l2_reg_cost(cost, model):
     """L2 regularization cost"""
     l2_losses = model.losses
+    l2_losses_tensor = tf.stack(l2_losses)
+    total_cost = cost + l2_losses_tensor
 
-    if l2_losses:
-        l2_loss = tf.add_n(l2_losses)
-    else:
-        l2_loss = 0
-
-    return cost + l2_loss
+    return total_cost
