@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""A module that does the trick"""
 import numpy as np
 
 
