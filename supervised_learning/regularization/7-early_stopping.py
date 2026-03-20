@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
-import tensorflow as tf
 
 
 def early_stopping(cost, opt_cost, threshold, patience, count):
