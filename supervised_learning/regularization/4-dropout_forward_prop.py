@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""A module to create regularization layer"""
 import numpy as np
 
 
 def dropout_forward_prop(X, weights, L, keep_prob):
-    """Forward Propagation with Dropout"""
-    cache = {"A0": X}
+    """Dropout forward propagation."""
+    cache = {}
+    cache["A0"] = X
 
     for i in range(1, L + 1):
         W = weights["W" + str(i)]
@@ -20,11 +20,8 @@ def dropout_forward_prop(X, weights, L, keep_prob):
             cache["A" + str(i)] = A
         else:
             A = np.tanh(Z)
-
-            D = np.random.rand(*A.shape) < keep_prob
-            A = A * D
-            A = A / keep_prob
-
+            D = (np.random.rand(*A.shape) < keep_prob).astype(int)
+            A = (A * D) / keep_prob
             cache["A" + str(i)] = A
             cache["D" + str(i)] = D
 
