@@ -27,11 +27,12 @@ def convolve(images, kernels, padding='same', stride=(1, 1)):
     output_w = int(((w + 2 * pw - kw) / sw) + 1)
 
     convolve = np.zeros((m, output_h, output_w, nc))
+    image = np.arange(m)
 
     for x in range(output_h):
         for y in range(output_w):
             for z in range(nc):
-                convolve[:, x, y] = np.sum(
+                convolve[image, x, y, z] = np.sum(
                     padded_images[
                         :, x * sh:(x * sh) + kh,
                         y * sw:(y * sw) + kw
