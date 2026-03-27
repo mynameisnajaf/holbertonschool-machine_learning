@@ -3,10 +3,10 @@
 import numpy as np
 
 
-def convolve_channels(images, kernel, padding='same', stride=(1, 1)):
+def convolve(images, kernels, padding='same', stride=(1, 1)):
     """convolve the images using a kernel"""
     m, h, w, c = images.shape
-    kh, kw = kernel.shape
+    kh, kw, kc, nc = kernels.shape
     sh, sw = stride
 
     ph, pw = 0, 0
@@ -26,16 +26,17 @@ def convolve_channels(images, kernel, padding='same', stride=(1, 1)):
     output_h = int(((h + 2 * ph - kh) / sh) + 1)
     output_w = int(((w + 2 * pw - kw) / sw) + 1)
 
-    convolve = np.zeros((m, output_h, output_w))
+    convolve = np.zeros((m, output_h, output_w, nc))
 
     for x in range(output_h):
         for y in range(output_w):
-            convolve[:, x, y] = np.sum(
-                padded_images[
-                    :, x * sh:(x * sh) + kh,
-                    y * sw:(y * sw) + kw
-                ] * kernel,
-                axis=(1, 2, 3)
-            )
+            for z in range(nc):
+                convolve[:, x, y] = np.sum(
+                    padded_images[
+                        :, x * sh:(x * sh) + kh,
+                        y * sw:(y * sw) + kw
+                    ] * kernels[:, :, :, z],
+                    axis=(1, 2, 3)
+                )
 
     return convolve
