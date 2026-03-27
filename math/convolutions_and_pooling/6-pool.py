@@ -6,7 +6,7 @@ import numpy as np
 def pool(images, kernel_shape, stride, mode='max'):
     """convolve the images using a kernel"""
     m, h, w, c = images.shape
-    kh, kw, kc = kernel_shape
+    kh, kw = kernel_shape
     sh, sw = stride
 
     output_h = int(1 + ((h - kh) / sh))
