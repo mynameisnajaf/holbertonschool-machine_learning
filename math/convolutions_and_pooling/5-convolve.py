@@ -6,7 +6,7 @@ import numpy as np
 def convolve_channels(images, kernel, padding='same', stride=(1, 1)):
     """convolve the images using a kernel"""
     m, h, w, c = images.shape
-    kh, kw, kc = kernel.shape
+    kh, kw = kernel.shape
     sh, sw = stride
 
     ph, pw = 0, 0
