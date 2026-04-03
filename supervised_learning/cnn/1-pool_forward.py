@@ -27,3 +27,5 @@ def pool_forward(A_prev, kernel_shape, stride=(1, 1), mode='max'):
                 conv[:, x, y, :] = np.max(region, axis=(1, 2))
             elif mode == 'avg':
                 conv[:, x, y, :] = np.mean(region, axis=(1, 2))
+
+    return conv
