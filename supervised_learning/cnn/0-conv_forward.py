@@ -5,7 +5,7 @@ import numpy as np
 
 def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
     """Convolution with forward pass"""
-    m, h_prev ,w_prev ,c_prev = A_prev.shape
+    m, h_prev, w_prev, c_prev = A_prev.shape
     kh, kw, c_prev, c_new = W.shape
     sh, sw = stride
     padh, padw = 0, 0
