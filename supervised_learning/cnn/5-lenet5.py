@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
-import tensorflow.keras as keras
+from tensorflow import keras as K
 
 
 def lenet5(X):
     """LeNet5 model"""
-    init = keras.initializers.he_normal()
-    activation = keras.activations.relu
-    conv1 = keras.layers.Conv2D(
+    init = K.initializers.he_normal()
+    activation = K.activations.relu
+    conv1 = K.layers.Conv2D(
         filters=6,
         kernel_size=(5, 5),
         padding="same",
@@ -15,12 +15,12 @@ def lenet5(X):
         initializer=init,
     )(X)
 
-    pool1 = keras.layers.MaxPooling2D(
+    pool1 = K.layers.MaxPooling2D(
         pool_size=(2, 2),
         strides=2
     )(conv1)
 
-    conv2 = keras.layers.Conv2D(
+    conv2 = K.layers.Conv2D(
         filters=16,
         kernel_size=(5, 5),
         padding="valid",
@@ -28,33 +28,33 @@ def lenet5(X):
         initializer=init,
     )(X)
 
-    pool2 = keras.layers.MaxPooling2D(
+    pool2 = K.layers.MaxPooling2D(
         pool_size=(2, 2),
         strides=2
     )(conv2)
 
-    flatten = keras.layers.Flatten()(pool2)
+    flatten = K.layers.Flatten()(pool2)
 
-    FC1 = keras.layers.Dense(
+    FC1 = K.layers.Dense(
         units=120,
         activation=activation,
         kernel_initializer=init
     )(flatten)
 
-    FC2 = keras.layers.Dense(
+    FC2 = K.layers.Dense(
         units=84,
         activation=activation,
         kernel_initializer=init
     )(FC1)
 
-    FC3 = keras.layers.Dense(
+    FC3 = K.layers.Dense(
         units=10,
         activation="softmax",
         kernel_initializer=init
     )(FC2)
 
-    model = keras.models.Model(inputs=X, outputs=FC3)
-    adam = keras.optimizers.Adam()
+    model = K.models.Model(inputs=X, outputs=FC3)
+    adam = K.optimizers.Adam()
     model.compile(
         optimizer=adam,
         loss='categorical_crossentropy',
