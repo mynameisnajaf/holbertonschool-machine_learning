@@ -7,7 +7,7 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
     """Convolve the backward function"""
     m, h_new, w_new, c_new = dZ.shape
     m, h_prev, w_prev, c_prev = A_prev.shape
-    kh, kw, c_prev, c_new= W.shape
+    kh, kw, c_prev, c_new = W.shape
     sh, sw = stride
 
     if padding == "same":
@@ -27,9 +27,11 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
     dW = np.zeros(W.shape)
     db = np.sum(dZ, axis=(0, 1, 2), keepdims=True)
 
-    A_prev_pad = np.pad(A_prev, pad_width=((0, 0), (padh, padh), (padw, padw),
+    A_prev_pad = np.pad(A_prev, pad_width=((0, 0), (padh, padh),
+                                           (padw, padw),
                                            (0, 0)), mode='constant')
-    dA_prev_pad = np.pad(dA_prev, pad_width=((0, 0), (padh, padh), (padw, padw),
+    dA_prev_pad = np.pad(dA_prev, pad_width=((0, 0), (padh, padh),
+                                             (padw, padw),
                                              (0, 0)), mode='constant')
 
     for i in range(m):
@@ -45,8 +47,9 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
 
                     a_slice = a_prev_pad[v_start:v_end, h_start:h_end]
                     da_prev_pad[v_start:v_end,
-                    h_start:h_end] += \
-                        W[:, :, :, c] * dZ[i, h, w, c]
+                    h_start:h_end] += (
+                            W[:, :, :, c] * dZ[i, h, w, c]
+                    )
                     dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
 
         if padding == 'same':
