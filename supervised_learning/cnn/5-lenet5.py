@@ -11,7 +11,9 @@ def lenet5(X):
         kernel_size=(5, 5),
         padding="same",
         activation=activation,
-        kernel_initializer=K.initializers.he_normal()
+        kernel_initializer=K.initializers.HeNormal(
+            seed=0
+        )
     )(X)
 
     pool1 = K.layers.MaxPooling2D(
@@ -24,7 +26,9 @@ def lenet5(X):
         kernel_size=(5, 5),
         padding="valid",
         activation=activation,
-        kernel_initializer=K.initializers.he_normal()
+        kernel_initializer=K.initializers.HeNormal(
+            seed=0
+        )
     )(pool1)
 
     pool2 = K.layers.MaxPooling2D(
@@ -37,19 +41,25 @@ def lenet5(X):
     FC1 = K.layers.Dense(
         units=120,
         activation=activation,
-        kernel_initializer=K.initializers.he_normal()
+        kernel_initializer=K.initializers.HeNormal(
+            seed=0
+        )
     )(flatten)
 
     FC2 = K.layers.Dense(
         units=84,
         activation=activation,
-        kernel_initializer=K.initializers.he_normal()
+        kernel_initializer=K.initializers.HeNormal(
+            seed=0
+        )
     )(FC1)
 
     FC3 = K.layers.Dense(
         units=10,
         activation="softmax",
-        kernel_initializer=K.initializers.he_normal()
+        kernel_initializer=K.initializers.HeNormal(
+            seed=0
+        )
     )(FC2)
 
     model = K.models.Model(inputs=X, outputs=FC3)
