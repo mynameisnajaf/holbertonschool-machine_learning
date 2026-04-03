@@ -35,16 +35,12 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
                 h_start = j * sw
                 h_end = h_start + kw
 
-                slice_A = A_padding[:, v_start:v_end, h_start:h_end, :]
+                a_slice = A_padding[v_start:v_end, h_start:h_end]
 
-                dA_padding[:, v_start:v_end, h_start:h_end, :] += (
-                        W[:, :, :, k] * dZ[:, i:i + 1, j:j + 1, k]
-                )
-
-                dW_padding[:, :, :, k] += np.sum(
-                    slice_A * dZ[:, i:i + 1, j:j + 1, k],
-                    axis=0
-                )
+                dA_padding[v_start:v_end,
+                h_start:h_end] += \
+                    W[:, :, :, k] * dZ[i, i, j, k]
+                dW_padding[:, :, :, k] += a_slice * dZ[i, i, j, k]
 
     if padding == "same":
         dA_prev = dA_padding[:, padh:-padh, padw:-padw, :]
