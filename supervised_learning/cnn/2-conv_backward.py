@@ -7,7 +7,7 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
     """Convolve the backward function"""
     m, h_new, w_new, c_new = dZ.shape
     m, h_prev, w_prev, c_prev = A_prev.shape
-    kh, kw = W.shape
+    kh, kw, c_prev, c_new= W.shape
     sh, sw = stride
 
     if padding == "same":
