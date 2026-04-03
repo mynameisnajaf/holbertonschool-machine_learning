@@ -23,29 +23,35 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
         mode='constant',
     )
 
-    dA_padding = np.zeros_like(A_padding)
-    dW_padding = np.zeros_like(W)
+    dA_prev = np.zeros(A_prev.shape)
+    dW = np.zeros(W.shape)
     db = np.sum(dZ, axis=(0, 1, 2), keepdims=True)
 
-    for i in range(h_new):
-        for j in range(w_new):
-            for k in range(c_new):
-                v_start = i * sh
-                v_end = v_start + kh
-                h_start = j * sw
-                h_end = h_start + kw
+    A_prev_pad = np.pad(A_prev, pad_width=((0, 0), (padh, padh), (padw, padw),
+                                           (0, 0)), mode='constant')
+    dA_prev_pad = np.pad(dA_prev, pad_width=((0, 0), (padh, padh), (padw, padw),
+                                             (0, 0)), mode='constant')
 
-                a_slice = A_padding[:, v_start:v_end, h_start:h_end, :]
-                dZ_slice = dZ[:, i, j, k][:, None, None, None]
+    for i in range(m):
+        a_prev_pad = A_prev_pad[i]
+        da_prev_pad = dA_prev_pad[i]
+        for h in range(h_new):
+            for w in range(w_new):
+                for c in range(c_new):
+                    v_start = h * sh
+                    v_end = v_start + kh
+                    h_start = w * sw
+                    h_end = h_start + kw
 
-                dA_padding[v_start:v_end,
-                h_start:h_end] += \
-                    W[:, :, :, k] * dZ[:, i, j, k]
-                dW_padding[:, :, :, k] += a_slice * dZ[:, i, j, k]
+                    a_slice = a_prev_pad[v_start:v_end, h_start:h_end]
+                    da_prev_pad[v_start:v_end,
+                    h_start:h_end] += \
+                        W[:, :, :, c] * dZ[i, h, w, c]
+                    dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
 
-    if padding == "same":
-        dA_prev = dA_padding[:, padh:-padh, padw:-padw, :]
-    else:
-        dA_prev = dA_padding
+        if padding == 'same':
+            dA_prev[i, :, :, :] += da_prev_pad[padh:-padh, padw:-padw, :]
+        if padding == 'valid':
+            dA_prev[i, :, :, :] += da_prev_pad
 
-    return dA_prev, dW_padding, db
+    return dA_prev, dW, db
