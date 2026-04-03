@@ -36,6 +36,7 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
                 h_end = h_start + kw
 
                 a_slice = A_padding[:, v_start:v_end, h_start:h_end, :]
+                dZ_slice = dZ[:, i, j, k][:, None, None, None]
 
                 dA_padding[v_start:v_end,
                 h_start:h_end] += \
