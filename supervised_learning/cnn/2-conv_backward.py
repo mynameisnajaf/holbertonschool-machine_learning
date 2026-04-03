@@ -46,8 +46,7 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
                     h_end = h_start + kw
 
                     a_slice = a_prev_pad[v_start:v_end, h_start:h_end]
-                    da_prev_pad[v_start:v_end,
-                    h_start:h_end] += (
+                    da_prev_pad[v_start:v_end, h_start:h_end] += (
                             W[:, :, :, c] * dZ[i, h, w, c]
                     )
                     dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
