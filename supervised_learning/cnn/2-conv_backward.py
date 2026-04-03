@@ -1,19 +1,35 @@
 #!/usr/bin/env python3
-"""A module that does the trick"""
+""" Script to backward propagate over a pooling layer in a NN"""
+
 import numpy as np
 
 
-def pool_backward(dA, A_prev, kernel_shape, stride=(1, 1), mode='max'):
-    """Convolve the backward function"""
-    m, h_new, w_new, c_new = dA.shape
-    m, h_prev, w_prev, c = A_prev.shape
-    kh, kw = kernel_shape
+def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
+    """Convolution backward propagation"""
+    (m, h_prev, w_prev, c_prev) = A_prev.shape
+    (m, h_new, w_new, c_new) = dZ.shape
+    (kh, kw, c_prev, c_new) = W.shape
     sh, sw = stride
 
+    if padding == 'same':
+        ph = int(np.ceil((((h_prev - 1) * sh + kh - h_prev) / 2)))
+        pw = int(np.ceil((((w_prev - 1) * sw + kw - w_prev) / 2)))
+    if padding == 'valid':
+        pw = 0
+        ph = 0
+
     dA_prev = np.zeros(A_prev.shape)
+    dW = np.zeros(W.shape)
+    db = np.sum(dZ, axis=(0, 1, 2), keepdims=True)
+
+    A_prev_pad = np.pad(A_prev, pad_width=((0, 0), (ph, ph), (pw, pw),
+                                           (0, 0)), mode='constant')
+    dA_prev_pad = np.pad(dA_prev, pad_width=((0, 0), (ph, ph), (pw, pw),
+                                             (0, 0)), mode='constant')
 
     for i in range(m):
-        a_prev = A_prev[i]
+        a_prev_pad = A_prev_pad[i]
+        da_prev_pad = dA_prev_pad[i]
         for h in range(h_new):
             for w in range(w_new):
                 for c in range(c_new):
@@ -22,20 +38,15 @@ def pool_backward(dA, A_prev, kernel_shape, stride=(1, 1), mode='max'):
                     h_start = w * sw
                     h_end = h_start + kw
 
-                    if mode == 'max':
-                        a_slice = a_prev[v_start:v_end, h_start:h_end, c]
+                    a_slice = a_prev_pad[v_start:v_end, h_start:h_end]
+                    da_prev_pad[v_start:v_end,
+                    h_start:h_end] += \
+                        W[:, :, :, c] * dZ[i, h, w, c]
+                    dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
 
-                        mask = (a_slice == np.max(a_slice))
-                        dA_prev[i, v_start:v_end,
-                        h_start:h_end,
-                        c] += np.multiply(mask, dA[i, h, w, c])
+        if padding == 'same':
+            dA_prev[i, :, :, :] += da_prev_pad[ph:-ph, pw:-pw, :]
+        if padding == 'valid':
+            dA_prev[i, :, :, :] += da_prev_pad
 
-                    elif mode == 'avg':
-                        da = dA[i, h, w, c]
-                        shape = kernel_shape
-                        average = da / (kh * kw)
-                        Z = np.ones(shape) * average
-                        dA_prev[i,
-                        v_start:v_end,
-                        h_start:h_end, c] += Z
-    return dA_prev
+    return dA_prev, dW, db
