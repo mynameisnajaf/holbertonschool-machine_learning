@@ -26,7 +26,7 @@ def lenet5(X):
         padding="valid",
         activation=activation,
         kernel_initializer=init,
-    )(X)
+    )(pool1)
 
     pool2 = K.layers.MaxPooling2D(
         pool_size=(2, 2),
