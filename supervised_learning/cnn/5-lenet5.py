@@ -5,14 +5,13 @@ from tensorflow import keras as K
 
 def lenet5(X):
     """LeNet5 model"""
-    init = K.initializers.he_normal()
     activation = K.activations.relu
     conv1 = K.layers.Conv2D(
         filters=6,
         kernel_size=(5, 5),
         padding="same",
         activation=activation,
-        kernel_initializer=init,
+        kernel_initializer=K.initializers.he_normal()
     )(X)
 
     pool1 = K.layers.MaxPooling2D(
@@ -25,7 +24,7 @@ def lenet5(X):
         kernel_size=(5, 5),
         padding="valid",
         activation=activation,
-        kernel_initializer=init,
+        kernel_initializer=K.initializers.he_normal()
     )(pool1)
 
     pool2 = K.layers.MaxPooling2D(
@@ -38,19 +37,19 @@ def lenet5(X):
     FC1 = K.layers.Dense(
         units=120,
         activation=activation,
-        kernel_initializer=init
+        kernel_initializer=K.initializers.he_normal()
     )(flatten)
 
     FC2 = K.layers.Dense(
         units=84,
         activation=activation,
-        kernel_initializer=init
+        kernel_initializer=K.initializers.he_normal()
     )(FC1)
 
     FC3 = K.layers.Dense(
         units=10,
         activation="softmax",
-        kernel_initializer=init
+        kernel_initializer=K.initializers.he_normal()
     )(FC2)
 
     model = K.models.Model(inputs=X, outputs=FC3)
