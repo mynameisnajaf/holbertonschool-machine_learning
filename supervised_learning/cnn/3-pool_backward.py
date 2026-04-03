@@ -40,5 +40,5 @@ def pool_backward(dA, A_prev, kernel_shape, stride=(1, 1), mode='max'):
                         dA_prev[
                             i,
                             v_start:v_end,
-                            v_start:h_end, c] += Z
+                            h_start:h_end, c] += Z
     return dA_prev
