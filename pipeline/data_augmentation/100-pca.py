@@ -28,7 +28,6 @@ def pca_color(image, alphas):
     m2[:, 0] = alphas * eig_vals[:]
     add_vect = np.matrix(m1) * np.matrix(m2)
 
-    # RGB
     for idx in range(3):
         cp_original[..., idx] += add_vect[idx]
 
