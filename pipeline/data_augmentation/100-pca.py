@@ -1,29 +1,37 @@
 #!/usr/bin/env python3
-"""PCA color augmentation"""
+"""PCA color augmentation (AlexNet style)"""
 import tensorflow as tf
 
 
 def pca_color(image, alphas):
-    """Applies PCA color augmentation to image"""
+    """
+    Performs PCA color augmentation as described in the AlexNet paper.
 
-    image = tf.keras.preprocessing.image.img_to_array(image)
+    Args:
+        image: tf.Tensor (H, W, 3)
+        alphas: tuple of length 3
+
+    Returns:
+        Augmented image (tf.Tensor)
+    """
+
     image = tf.cast(image, tf.float32)
 
-    # flatten image (H*W, 3)
+    # reshape image to (N, 3)
     flat = tf.reshape(image, [-1, 3])
 
-    # center
+    # compute mean
     mean = tf.reduce_mean(flat, axis=0)
     centered = flat - mean
 
-    # covariance matrix
+    # covariance matrix (3x3)
     cov = tf.matmul(centered, centered, transpose_a=True)
     cov /= tf.cast(tf.shape(flat)[0], tf.float32)
 
-    # eigenvalues & eigenvectors
+    # eigenvalues + eigenvectors (symmetric matrix → use eigh)
     eigvals, eigvecs = tf.linalg.eigh(cov)
 
-    # sort (important!)
+    # sort eigenvalues descending (important for AlexNet style)
     idx = tf.argsort(eigvals, direction='DESCENDING')
     eigvals = tf.gather(eigvals, idx)
     eigvecs = tf.gather(eigvecs, idx, axis=1)
@@ -31,11 +39,16 @@ def pca_color(image, alphas):
     # convert alphas
     alphas = tf.cast(alphas, tf.float32)
 
-    # PCA noise
-    noise = tf.tensordot(eigvecs, eigvals * alphas, axes=1)
+    # PCA noise: eigvecs * (eigvals * alphas)
+    noise = tf.matmul(
+        eigvecs,
+        tf.reshape(eigvals * alphas, (3, 1))
+    )
 
-    # reshape noise and apply
-    noise = tf.reshape(noise, (1, 1, 3))
-    image = image + noise
+    noise = tf.reshape(noise, (1, 3))
 
-    return image
+    # add noise
+    flat = flat + noise
+
+    # reshape back
+    return tf.reshape(flat, tf.shape(image))
