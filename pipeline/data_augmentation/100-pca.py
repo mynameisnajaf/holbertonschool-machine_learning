@@ -1,36 +1,47 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
 import tensorflow as tf
-import numpy as np
 
 
 def pca_color(image, alphas):
-    """PCA color augmentation"""
-    original_image = tf.keras.preprocessing.image.img_to_array(image)
-    cp_original = original_image.astype(float).copy()
+    """PCA color augmentation using TensorFlow only"""
 
-    original_image = original_image / 255.0
-    img_rs = original_image.reshape(-1, 3)
+    # Convert image to float32 and normalize
+    image = tf.cast(image, tf.float32) / 255.0
 
-    img_centered = img_rs - np.mean(img_rs, axis=0)
+    # Reshape to (num_pixels, 3)
+    flat = tf.reshape(image, [-1, 3])
 
-    img_cov = np.cov(img_centered, rowvar=False)
+    # Center the data
+    mean = tf.reduce_mean(flat, axis=0)
+    centered = flat - mean
 
-    eig_vals, eig_vecs = np.linalg.eigh(img_cov)
+    # Covariance matrix
+    cov = tf.matmul(centered, centered, transpose_a=True)
+    cov /= tf.cast(tf.shape(flat)[0] - 1, tf.float32)
 
-    sort_perm = eig_vals[::-1].argsort()
-    eig_vals[::-1].sort()
-    eig_vecs = eig_vecs[:, sort_perm]
+    # Eigen decomposition
+    eigvals, eigvecs = tf.linalg.eigh(cov)
 
-    m1 = np.column_stack((eig_vecs))
-    m2 = np.zeros((3, 1))
+    # Sort in descending order
+    idx = tf.argsort(eigvals, direction='DESCENDING')
+    eigvals = tf.gather(eigvals, idx)
+    eigvecs = tf.gather(eigvecs, idx, axis=1)
 
-    m2[:, 0] = alphas * eig_vals[:]
-    add_vect = np.matrix(m1) * np.matrix(m2)
+    # Compute PCA noise
+    alphas = tf.cast(alphas, tf.float32)
+    delta = tf.matmul(
+        eigvecs,
+        tf.reshape(alphas * eigvals, [-1, 1])
+    )
 
-    for idx in range(3):
-        cp_original[..., idx] += add_vect[idx]
+    # Add noise
+    flat_aug = flat + tf.reshape(delta, [1, 3])
 
-    cp_original = np.clip(cp_original, 0.0, 255.0)
-    cp_original = cp_original.astype(np.uint8)
-    return cp_original
+    # Reshape back
+    augmented = tf.reshape(flat_aug, tf.shape(image))
+
+    # Scale back to [0,255]
+    augmented = tf.clip_by_value(augmented * 255.0, 0, 255)
+
+    return tf.cast(augmented, tf.uint8)
