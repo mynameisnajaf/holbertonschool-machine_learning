@@ -1,46 +1,42 @@
 #!/usr/bin/env python3
-"""A module that does the trick"""
+"""PCA color augmentation"""
+
 import tensorflow as tf
 
 
 def pca_color(image, alphas):
-    """PCA color augmentation using TensorFlow only"""
+    """Applies PCA color augmentation to image"""
 
-    # Convert image to array and normalize
     image = tf.keras.preprocessing.image.img_to_array(image)
-    image = tf.cast(image, tf.float32) / 255.0
+    image = tf.cast(image, tf.float32)
 
-    # Reshape to (num_pixels, 3)
+    # flatten image (H*W, 3)
     flat = tf.reshape(image, [-1, 3])
 
-    # Compute mean and center data
+    # center
     mean = tf.reduce_mean(flat, axis=0)
     centered = flat - mean
 
-    # Covariance matrix
-    cov = tf.matmul(centered, centered, transpose_a=True) / tf.cast(tf.shape(flat)[0], tf.float32)
+    # covariance matrix
+    cov = tf.matmul(centered, centered, transpose_a=True)
+    cov /= tf.cast(tf.shape(flat)[0], tf.float32)
 
-    # Eigen decomposition
+    # eigenvalues & eigenvectors
     eigvals, eigvecs = tf.linalg.eigh(cov)
 
-    # Convert alphas to tensor
+    # sort (important!)
+    idx = tf.argsort(eigvals, direction='DESCENDING')
+    eigvals = tf.gather(eigvals, idx)
+    eigvecs = tf.gather(eigvecs, idx, axis=1)
+
+    # convert alphas
     alphas = tf.cast(alphas, tf.float32)
 
-    # Compute PCA noise
-    delta = tf.matmul(
-        eigvecs,
-        tf.expand_dims(alphas * eigvals, axis=1)
-    )
+    # PCA noise
+    noise = tf.tensordot(eigvecs, eigvals * alphas, axes=1)
 
-    delta = tf.reshape(delta, [3])
+    # reshape noise and apply
+    noise = tf.reshape(noise, (1, 1, 3))
+    image = image + noise
 
-    # Add perturbation
-    augmented = flat + delta
-
-    # Reshape back to image
-    augmented = tf.reshape(augmented, tf.shape(image))
-
-    # Clip values to valid range
-    augmented = tf.clip_by_value(augmented, 0.0, 1.0)
-
-    return augmented
+    return image
