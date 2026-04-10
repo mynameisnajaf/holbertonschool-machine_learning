@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """PCA color augmentation"""
-
 import tensorflow as tf
 
 
