@@ -1,37 +1,27 @@
 #!/usr/bin/env python3
-"""PCA color augmentation (AlexNet style)"""
-
+"""A module that does the trick"""
 import tensorflow as tf
 
 
 def pca_color(image, alphas):
-    """
-    Performs PCA color augmentation as described in the AlexNet paper.
-    """
+    """Do a PCA on the image"""
+    orig_type = image.dtype
+    img_float = tf.cast(image, tf.float32)
 
-    image = tf.cast(image, tf.float32)
-    flat = tf.reshape(image, [-1, 3])
+    pixels = tf.reshape(img_float, [-1, 3])
 
-    mean = tf.reduce_mean(flat, axis=0)
-    centered = flat - mean
+    means = tf.reduce_mean(pixels, axis=0)
+    centered_pixels = pixels - means
 
-    cov = tf.matmul(centered, centered, transpose_a=True)
-    cov /= tf.cast(tf.shape(flat)[0], tf.float32)
+    num_samples = tf.cast(tf.shape(pixels)[0], tf.float32)
+    covariance = tf.matmul(tf.transpose(centered_pixels), centered_pixels) / (num_samples - 1.0)
 
-    eigvals, eigvecs = tf.linalg.eigh(cov)
-
-    idx = tf.argsort(eigvals, direction='DESCENDING')
-    eigvals = tf.gather(eigvals, idx)
-    eigvecs = tf.gather(eigvecs, idx, axis=1)
+    eigenvalues, eigenvectors = tf.linalg.eigh(covariance)
 
     alphas = tf.cast(alphas, tf.float32)
+    delta = tf.matmul(eigenvectors, tf.reshape(alphas * eigenvalues, (3, 1)))
 
-    noise = tf.matmul(
-        eigvecs,
-        tf.reshape(eigvals * alphas, (3, 1))
-    )
+    delta = tf.reshape(delta, (1, 1, 3))
+    result = img_float + delta
 
-    noise = tf.reshape(noise, (1, 3))
-
-    flat = flat + noise
-    return tf.reshape(flat, tf.shape(image))
+    return tf.cast(tf.clip_by_value(result, 0, 255), orig_type)
