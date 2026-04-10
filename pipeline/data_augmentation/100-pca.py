@@ -6,8 +6,8 @@ import tensorflow as tf
 def pca_color(image, alphas):
     """PCA color augmentation using TensorFlow only"""
 
-    # Convert image to float32 and normalize
-    image = tf.cast(image, tf.float32) / 255.0
+    # Convert to float32 (DO NOT normalize)
+    image = tf.cast(image, tf.float32)
 
     # Reshape to (num_pixels, 3)
     flat = tf.reshape(image, [-1, 3])
@@ -23,25 +23,24 @@ def pca_color(image, alphas):
     # Eigen decomposition
     eigvals, eigvecs = tf.linalg.eigh(cov)
 
-    # Sort in descending order
+    # Sort descending
     idx = tf.argsort(eigvals, direction='DESCENDING')
     eigvals = tf.gather(eigvals, idx)
     eigvecs = tf.gather(eigvecs, idx, axis=1)
 
-    # Compute PCA noise
     alphas = tf.cast(alphas, tf.float32)
     delta = tf.matmul(
         eigvecs,
-        tf.reshape(alphas * eigvals, [-1, 1])
+        tf.reshape(alphas * tf.sqrt(eigvals), [-1, 1])
     )
 
-    # Add noise
+    # Add PCA noise
     flat_aug = flat + tf.reshape(delta, [1, 3])
 
     # Reshape back
     augmented = tf.reshape(flat_aug, tf.shape(image))
 
-    # Scale back to [0,255]
-    augmented = tf.clip_by_value(augmented * 255.0, 0, 255)
+    # Clip and return
+    augmented = tf.clip_by_value(augmented, 0, 255)
 
     return tf.cast(augmented, tf.uint8)
