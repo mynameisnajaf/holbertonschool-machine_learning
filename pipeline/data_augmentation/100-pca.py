@@ -1,32 +1,37 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
 import tensorflow as tf
+import numpy as np
 
 
 def pca_color(image, alphas):
     """PCA color augmentation"""
-    orig_shape = tf.shape(image)
-    flat_image = tf.reshape(image, [-1, 3])
+    original_image = tf.keras.preprocessing.image.img_to_array(image)
+    cp_original = original_image.astype(float).copy()
 
-    flat_image = tf.cast(flat_image, tf.float32)
+    original_image = original_image / 255.0
+    img_rs = original_image.reshape(-1, 3)
 
-    mean = tf.reduce_mean(flat_image, axis=0)
-    centered = flat_image - mean
+    img_centered = img_rs - np.mean(img_rs, axis=0)
 
-    cov = tf.matmul(centered, centered, transpose_a=True)
-    cov /= tf.cast(tf.shape(centered)[0] - 1, tf.float32)
+    img_cov = np.cov(img_centered, rowvar=False)
 
-    eigvals, eigvecs = tf.linalg.eigh(cov)
+    eig_vals, eig_vecs = np.linalg.eigh(img_cov)
 
-    idx = tf.argsort(eigvals, direction='DESCENDING')
-    eigvals = tf.gather(eigvals, idx)
-    eigvecs = tf.gather(eigvecs, idx, axis=1)
+    sort_perm = eig_vals[::-1].argsort()
+    eig_vals[::-1].sort()
+    eig_vecs = eig_vecs[:, sort_perm]
 
-    delta = tf.matmul(
-        eigvecs,
-        tf.reshape(alphas * tf.sqrt(eigvals), [-1, 1])
-    )
-    augmented = flat_image + tf.reshape(delta, [1, 3])
-    augmented = tf.reshape(augmented, orig_shape)
+    m1 = np.column_stack((eig_vecs))
+    m2 = np.zeros((3, 1))
 
-    return augmented
+    m2[:, 0] = alphas * eig_vals[:]
+    add_vect = np.matrix(m1) * np.matrix(m2)
+
+    # RGB
+    for idx in range(3):
+        cp_original[..., idx] += add_vect[idx]
+
+    cp_original = np.clip(cp_original, 0.0, 255.0)
+    cp_original = cp_original.astype(np.uint8)
+    return cp_original
