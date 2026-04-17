@@ -6,11 +6,11 @@ from tensorflow import keras as K
 def identity_block(A_prev, filters):
     """The identity block"""
     init = K.initializers.he_normal()
+    activation = 'relu'
     F11, F3, F12 = filters
 
     conv1 = K.layers.Conv2D(filters=F11,
                             kernel_size=1,
-                            activation='relu',
                             kernel_initializer=init,
                             padding='same')(A_prev)
     batch1 = K.layers.BatchNormalization(axis=3)(conv1)
