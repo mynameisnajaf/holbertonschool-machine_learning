@@ -30,10 +30,10 @@ def projection_block(A_prev, filters, s=2):
                             kernel_initializer=init)(act2)
 
     conv1_proj = K.layers.Conv2D(filters=F12,
-                                kernel_size=1,
-                                strides=s,
-                                padding='same',
-                                kernel_initializer=init)(A_prev)
+                                 kernel_size=1,
+                                 strides=s,
+                                 padding='same',
+                                 kernel_initializer=init)(A_prev)
     batch3 = K.layers.BatchNormalization(axis=3)(conv3)
     batch4 = K.layers.BatchNormalization(axis=3)(conv1_proj)
 
