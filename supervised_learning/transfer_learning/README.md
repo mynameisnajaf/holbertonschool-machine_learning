@@ -1,0 +1,1 @@
+I learn by transfering my previous knowledge
