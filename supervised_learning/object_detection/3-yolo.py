@@ -77,7 +77,9 @@ class Yolo:
         box_classes = []
         box_scores = []
 
-        for b, conf, prob in zip(boxes, box_confidences, box_class_probs):
+        for b, conf, prob in zip(boxes,
+                                 box_confidences,
+                                 box_class_probs):
             scores = conf * prob
             classes = np.argmax(scores, axis=-1)
             class_scores = np.max(scores, axis=-1)
