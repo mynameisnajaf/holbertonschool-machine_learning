@@ -154,6 +154,7 @@ class Yolo:
             np.array(final_classes),
             np.array(final_scores)
         )
+
     @staticmethod
     def load_images(folder_path):
         """Load images from folder"""
