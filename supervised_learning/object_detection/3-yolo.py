@@ -135,7 +135,8 @@ class Yolo:
                 inter_h = np.maximum(0, y2 - y1)
                 inter_area = inter_w * inter_h
 
-                area_best = (best_box[2] - best_box[0]) * (best_box[3] - best_box[1])
+                area_best = (best_box[2] - best_box[0]) * (best_box[3]
+                                                           - best_box[1])
                 area_rest = (rest_boxes[:, 2] - rest_boxes[:, 0]) * \
                             (rest_boxes[:, 3] - rest_boxes[:, 1])
 
