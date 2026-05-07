@@ -115,7 +115,7 @@ class NST:
         _, image_h, image_w, image_c = input_layer.shape
         product = int(image_h * image_w)
         features = tf.reshape(input_layer, (product, image_c))
-        gram = tf.matmul(features, tf.transpose(features))
+        gram = tf.matmul(features, features, transpose_a=True)
         gram = tf.expand_dims(gram, 0)
         gram = gram / tf.cast(product, tf.float32)
         return gram
