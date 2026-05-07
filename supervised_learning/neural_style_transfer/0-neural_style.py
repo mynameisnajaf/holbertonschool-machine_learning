@@ -14,9 +14,13 @@ class NST:
 
     def __init__(self, style_image, content_image, alpha=1e4, beta=1):
         """Initialize the class"""
-        if len(style_image.shape) != 3 or not isinstance(style_image, np.ndarray):
+        if (not isinstance(style_image, np.ndarray) or
+                len(style_image.shape) != 3 or
+                style_image.shape[2] != 3):
             raise TypeError("style_image must be a numpy.ndarray with shape (h, w, 3)")
-        if len(content_image.shape) != 3 or not isinstance(content_image, np.ndarray):
+        if (not isinstance(content_image, np.ndarray) or
+                len(content_image.shape) != 3 or
+                content_image.shape[2] != 3):
             raise TypeError("content_image must be a numpy.ndarray with shape (h, w, 3)")
         style_h, style_w, style_c = style_image.shape
         content_h, content_w, content_c = content_image.shape
@@ -26,9 +30,11 @@ class NST:
         if content_h <= 0 or content_w <= 0 or content_c != 3:
             raise TypeError(
                 "content_image must be a numpy.ndarray with shape (h, w, 3)")
-        if alpha < 0 or not isinstance(alpha, (float, int)):
+        if (not isinstance(alpha, (int, float)) or
+                alpha < 0):
             raise TypeError("alpha must be a non-negative number")
-        if beta < 0 or not isinstance(beta, (float, int)):
+        if (not isinstance(beta, (int, float)) or
+                beta < 0):
             raise TypeError("beta must be a non-negative number")
         self.style_image = self.scale_image(style_image)
         self.content_image = self.scale_image(content_image)
@@ -38,7 +44,9 @@ class NST:
     @staticmethod
     def scale_image(image):
         """Scale the image"""
-        if len(image.shape) != 3 or not isinstance(image, np.ndarray):
+        if (not isinstance(image, np.ndarray) or
+                len(image.shape) != 3 or
+                image.shape[2] != 3):
             raise TypeError("image must be a numpy.ndarray with shape (h, w, 3)")
         image_h, image_w, image_c = image.shape
         if image_h <= 0 or image_w <= 0 or image_c != 3:
