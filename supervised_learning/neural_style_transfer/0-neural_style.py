@@ -39,7 +39,7 @@ class NST:
     def scale_image(image):
         """Scale the image"""
         if len(image.shape) != 3 or not isinstance(image, np.ndarray):
-            raise TypeError("style_image must be a numpy.ndarray with shape (h, w, 3)")
+            raise TypeError("image must be a numpy.ndarray with shape (h, w, 3)")
         image_h, image_w, image_c = image.shape
         if image_h <= 0 or image_w <= 0 or image_c != 3:
             raise TypeError(
@@ -50,7 +50,12 @@ class NST:
         else:
             new_w = 512
             new_h = int(image_h * 512 / image_w)
-        resized_image = tf.image.resize(image, (new_w, new_h))
+        resized_image = tf.image.resize(
+            image,
+            (new_h, new_w),
+            method=tf.image.ResizeMethod.BICUBIC
+        )
         rescaled_image = resized_image / 255.0
         rescaled_image = tf.clip_by_value(rescaled_image, 0.0, 1.0)
+        rescaled_image = tf.expand_dims(rescaled_image, 0)
         return rescaled_image
