@@ -3,6 +3,7 @@
 import numpy as np
 import tensorflow as tf
 
+
 class NST:
     """A class that does the trick"""
     style_layers = ['block1_conv1',
