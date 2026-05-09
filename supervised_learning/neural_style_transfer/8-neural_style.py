@@ -243,7 +243,9 @@ class NST:
 
         with tf.GradientTape() as tape:
             tape.watch(generated_image)
-            total_cost, content_cost, style_cost = self.total_cost(generated_image)
+            total_cost, content_cost, style_cost = self.total_cost(
+                generated_image
+            )
 
         grads = tape.gradient(total_cost, generated_image)
 
