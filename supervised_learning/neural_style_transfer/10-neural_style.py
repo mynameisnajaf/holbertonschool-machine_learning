@@ -357,22 +357,15 @@ content {J_content.numpy()}, style {J_style.numpy()}, var {J_var.numpy()}")
     @staticmethod
     def variational_cost(generated_image):
         """
-        This method calculates the total variation cost for the generated
-        image.
-        Args:
-            generated_image (tf.Tensor): a tf.Tensor of shape (1, nh, nw, 3)
-                containing the generated image.
-        Returns:
-            The total variation cost.
+        Calculates the total variation cost for the generated image.
         """
-        len_image = len(generated_image.shape)
-        error = f"image must be a tensor of rank 3 or 4"
-        if (not isinstance(generated_image, (tf.Tensor, tf.Variable))
-                or (len_image != 4 and len_image != 3)):
-            raise TypeError(error)
-        # Calculate the total variation cost
-        var_cost = tf.image.total_variation(generated_image)
-        # Remove the extra dimension
-        var_cost = tf.squeeze(var_cost)
+        if (not isinstance(generated_image, (tf.Tensor, tf.Variable)) or
+                len(generated_image.shape) != 4):
+            raise TypeError("image must be a tensor of rank 4")
 
-        return var_cost
+        # Shifted differences in height and width
+        height_diff = tf.square(generated_image[:, 1:, :, :] - generated_image[:, :-1, :, :])
+        width_diff = tf.square(generated_image[:, :, 1:, :] - generated_image[:, :, :-1, :])
+
+        # Sum of both directions
+        return tf.reduce_sum(height_diff) + tf.reduce_sum(width_diff)
