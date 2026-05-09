@@ -283,7 +283,9 @@ class NST:
 
         optimizer = tf.optimizers.Adam(learning_rate=lr, beta_1=beta1,
                                        beta_2=beta2)
+
         generated_image = tf.Variable(self.content_image)
+
         best_cost = float('inf')
         best_image = None
 
