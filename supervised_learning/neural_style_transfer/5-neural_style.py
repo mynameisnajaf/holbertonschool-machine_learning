@@ -111,7 +111,7 @@ class NST:
             raise TypeError(
                 "input_layer must be a tensor of rank 4"
             )
-        if len(input_layer.shape) is not 4:
+        if len(input_layer.shape) != 4:
             raise TypeError("input_layer must be a tensor of rank 4")
         _, image_h, image_w, image_c = input_layer.shape
         product = int(image_h * image_w)
@@ -186,3 +186,19 @@ class NST:
 
             style_cost += layer_cost * weight
         return style_cost
+
+    def content_cost(self, content_output):
+        """Calculate the content cost"""
+        shape = self.content_feature.shape
+        if not isinstance(content_output, (
+                tf.Tensor, tf.Variable
+        )) or content_output.shape != shape:
+            raise TypeError(
+                f"content_output must be a tensor of shape {shape}"
+            )
+
+        content_cost = tf.reduce_mean(
+            tf.square(content_output - self.content_feature)
+        )
+
+        return content_cost
