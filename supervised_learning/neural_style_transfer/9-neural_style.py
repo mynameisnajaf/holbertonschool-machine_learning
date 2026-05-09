@@ -251,7 +251,9 @@ class NST:
 
         return grads, total_cost, content_cost, style_cost
 
-    def generate_image(self, iterations=1000, step=None, lr=0.01, beta1=0.9, beta2=0.99):
+    def generate_image(self,
+                       iterations=1000,
+                       step=None, lr=0.01, beta1=0.9, beta2=0.99):
         """Generate the image"""
         if not isinstance(iterations, int):
             raise TypeError("iterations must be an integer")
@@ -295,5 +297,6 @@ class NST:
             if J_total < best_cost:
                 best_cost = J_total
                 prev_image = generated_image
+
         best_image = prev_image[0]
         return best_image.numpy(), best_cost.numpy()
