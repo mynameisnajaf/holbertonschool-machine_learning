@@ -202,3 +202,31 @@ class NST:
         )
 
         return content_cost
+
+    def total_cost(self, generated_image):
+        """Calculate the total cost"""
+        shape = self.content_image.shape
+        if not isinstance(generated_image, (
+                tf.Tensor, tf.Variable
+        )) or generated_image.shape != shape:
+            raise TypeError(
+                f"generated_image must be a tensor of shape {shape}"
+            )
+
+        generated_image = tf.keras.applications.vgg19.preprocess_input(
+            generated_image * 255
+        )
+
+        outputs = self.model(generated_image)
+
+        style_outputs = outputs[:-1]
+        content_output = outputs[-1]
+
+        style_cost = self.style_cost(style_outputs)
+        content_cost = self.content_cost(content_output)
+
+        total_cost = (self.alpha * content_cost) + (
+                self.beta * style_cost
+        )
+
+        return total_cost, content_cost, style_cost
