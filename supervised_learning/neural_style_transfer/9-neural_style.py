@@ -291,16 +291,20 @@ class NST:
             optimizer.apply_gradients([(grads, generated_image)])
             generated_image.assign(tf.clip_by_value(generated_image, 0, 1))
 
+            cost_val = J_total.numpy()
+            content_val = J_content.numpy()
+            style_val = J_style.numpy()
+
             if step is not None and i % step == 0:
                 print(
-                    f"Cost at iteration {i}: {J_total.numpy()}, "
-                    f"content {J_content.numpy()}, style {J_style.numpy()}"
+                    f"Cost at iteration {i}: {cost_val}, "
+                    f"content {content_val}, style {style_val}"
                 )
 
-            if J_total.numpy() < best_cost:
-                best_cost = J_total.numpy()
+            if cost_val < best_cost:
+                best_cost = cost_val
                 best_image = tf.identity(generated_image)
 
         best_image = tf.squeeze(best_image, axis=0)
 
-        return best_image.numpy(), best_cost
+        return best_image.numpy(), float(best_cost)
