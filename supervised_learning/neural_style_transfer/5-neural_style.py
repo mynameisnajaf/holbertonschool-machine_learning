@@ -181,8 +181,8 @@ class NST:
         weight = 1 / l
         style_cost = 0
         for i in range(l):
-            style_cost += (
-                self.layer_style_cost(style_outputs[i],
-                                      self.gram_style_features[i] * weight)
-            )
+            layer_cost = self.layer_style_cost(
+                style_outputs[i], self.gram_style_features[i])
+
+            style_cost += layer_cost * weight
         return style_cost
