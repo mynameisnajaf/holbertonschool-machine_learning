@@ -288,6 +288,7 @@ class NST:
         for i in range(iterations):
 
             with tf.GradientTape() as tape:
+                tape.watch(generated_image)
                 total_cost, content_cost, style_cost = self.total_cost(
                     generated_image
                 )
@@ -309,5 +310,7 @@ class NST:
                     f"content {content_cost.numpy()}, "
                     f"style {style_cost.numpy()}"
                 )
+
+        best_image = tf.squeeze(best_image, axis=0)
 
         return best_image, best_cost
