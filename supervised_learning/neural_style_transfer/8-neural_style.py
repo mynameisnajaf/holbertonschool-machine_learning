@@ -230,3 +230,20 @@ class NST:
         )
 
         return total_cost, content_cost, style_cost
+
+    def compute_grads(self, generated_image):
+        """Calculate the gradient of the cost"""
+        shape = self.content_image.shape
+        if not isinstance(generated_image, (
+                tf.Tensor, tf.Variable
+        )) or generated_image.shape != shape:
+            raise TypeError(
+                f"generated_image must be a tensor of shape {shape}"
+            )
+
+        with tf.GradientTape() as tape:
+            total_cost, content_cost, style_cost = self.total_cost(generated_image)
+
+        grads = tape.gradient(total_cost, generated_image)
+
+        return grads, total_cost, content_cost, style_cost
