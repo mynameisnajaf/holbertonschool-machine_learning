@@ -276,41 +276,31 @@ class NST:
 
         generated_image = tf.Variable(self.content_image)
 
-        best_image = generated_image
-        best_cost = float("inf")
+        best_cost = float('inf')
+        best_image = tf.identity(generated_image)
 
-        optimizer = tf.keras.optimizers.Adam(
-            learning_rate=lr,
-            beta_1=beta1,
-            beta_2=beta2
-        )
+        optimizer = tf.optimizers.Adam(lr, beta1, beta2)
 
-        for i in range(iterations):
+        for i in range(iterations + 1):
 
             with tf.GradientTape() as tape:
-                tape.watch(generated_image)
-                total_cost, content_cost, style_cost = self.total_cost(
+                grads, J_total, J_content, J_style = self.compute_grads(
                     generated_image
                 )
 
-            grads = tape.gradient(total_cost, generated_image)
             optimizer.apply_gradients([(grads, generated_image)])
+            generated_image.assign(tf.clip_by_value(generated_image, 0, 1))
 
-            generated_image.assign(
-                tf.clip_by_value(generated_image, 0.0, 1.0)
-            )
-
-            if total_cost < best_cost:
-                best_cost = total_cost
-                best_image = tf.identity(generated_image)
-
-            if step is not None and (i % step == 0 or i == iterations - 1):
+            if step is not None and i % step == 0:
                 print(
-                    f"Cost at iteration {i}: {total_cost.numpy()}, "
-                    f"content {content_cost.numpy()}, "
-                    f"style {style_cost.numpy()}"
+                    f"Cost at iteration {i}: {J_total.numpy()}, "
+                    f"content {J_content.numpy()}, style {J_style.numpy()}"
                 )
+
+            if J_total.numpy() < best_cost:
+                best_cost = J_total.numpy()
+                best_image = tf.identity(generated_image)
 
         best_image = tf.squeeze(best_image, axis=0)
 
-        return best_image, best_cost
+        return best_image.numpy(), best_cost
