@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
 import numpy as np
-from sklearn.covariance import log_likelihood
-
 pdf = __import__('5-pdf').pdf
 
 
