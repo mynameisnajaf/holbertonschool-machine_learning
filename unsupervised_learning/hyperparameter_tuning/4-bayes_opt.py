@@ -23,27 +23,23 @@ class BayesianOptimization:
         """Acquisition function"""
         mu, sigma = self.gp.predict(self.X_s)
 
-        mu = mu.reshape(-1)
-        sigma = sigma.reshape(-1)
-
         if self.minimize:
-            best = np.min(self.gp.Y)
-            imp = best - mu - self.xsi
+            Y_sample = np.min(self.gp.Y)
+            imp = Y_sample - mu - self.xsi
         else:
-            best = np.max(self.gp.Y)
-            imp = mu - best - self.xsi
+            Y_sample = np.max(self.gp.Y)
+            imp = mu - Y_sample - self.xsi
 
-        with np.errstate(divide='warn'):
-            Z = np.zeros_like(imp)
-            Z[sigma > 0] = imp[sigma > 0] / sigma[sigma > 0]
+        Z = np.zeros(sigma.shape[0])
+        for i in range(sigma.shape[0]):
+            # formula if σ(x)>0 : μ(x)−f(x+)−ξ / σ(x)
+            if sigma[i] > 0:
+                Z[i] = imp[i] / sigma[i]
+            # formula if σ(x)=0
+            else:
+                Z[i] = 0
+            ei = imp * norm.cdf(Z) + sigma * norm.pdf(Z)
 
-            EI = np.zeros_like(imp)
+        X_next = self.X_s[np.argmax(ei)]
 
-            EI[sigma > 0] = (
-                    imp[sigma > 0] * norm.cdf(Z[sigma > 0])
-                    + sigma[sigma > 0] * norm.pdf(Z[sigma > 0])
-            )
-
-        X_next = self.X_s[np.argmax(EI)]
-
-        return X_next, EI
+        return X_next, ei
