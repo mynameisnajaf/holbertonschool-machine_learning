@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
 import numpy as np
-GP = __import__('2-gp').GaussianProcess
 from scipy.stats import norm
+GP = __import__('2-gp').GaussianProcess
 
 
 class BayesianOptimization:
@@ -39,8 +39,9 @@ class BayesianOptimization:
 
             EI = np.zeros_like(imp)
             EI[sigma > 0] = (
-                imp[sigma > 0] * norm.cdf(Z[sigma > 0]) +
-                sigma[sigma > 0] * norm.pdf(Z[sigma > 0])
+                imp[sigma > 0] * norm.cdf(
+                Z[sigma > 0]
+            ) + sigma[sigma > 0] * norm.pdf(Z[sigma > 0])
             )
 
         X_next = self.X_s[np.argmax(EI)]
