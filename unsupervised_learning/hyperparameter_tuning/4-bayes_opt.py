@@ -38,10 +38,10 @@ class BayesianOptimization:
             Z[sigma > 0] = imp[sigma > 0] / sigma[sigma > 0]
 
             EI = np.zeros_like(imp)
+
             EI[sigma > 0] = (
-                imp[sigma > 0] * norm.cdf(
-                Z[sigma > 0]
-            ) + sigma[sigma > 0] * norm.pdf(Z[sigma > 0])
+                    imp[sigma > 0] * norm.cdf(Z[sigma > 0])
+                    + sigma[sigma > 0] * norm.pdf(Z[sigma > 0])
             )
 
         X_next = self.X_s[np.argmax(EI)]
