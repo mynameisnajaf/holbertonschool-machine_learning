@@ -17,9 +17,9 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
     """
 
     # Encoder
-    encoder_input = keras.Input(shape=(input_dims,))
+    encoder_inputs = keras.Input(shape=(input_dims,))
 
-    x = encoder_input
+    x = encoder_inputs
     for nodes in hidden_layers:
         x = keras.layers.Dense(
             units=nodes,
@@ -52,45 +52,44 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
     )([z_mean, z_log_var])
 
     encoder = keras.Model(
-        encoder_input,
+        encoder_inputs,
         [z, z_mean, z_log_var]
     )
 
     # Decoder
-    decoder_input = keras.Input(shape=(latent_dims,))
+    decoder_inputs = keras.Input(shape=(latent_dims,))
 
-    x = decoder_input
+    x = decoder_inputs
     for nodes in reversed(hidden_layers):
         x = keras.layers.Dense(
             units=nodes,
             activation='relu'
         )(x)
 
-    decoder_output = keras.layers.Dense(
+    decoder_outputs = keras.layers.Dense(
         units=input_dims,
         activation='sigmoid'
     )(x)
 
     decoder = keras.Model(
-        decoder_input,
-        decoder_output
+        decoder_inputs,
+        decoder_outputs
     )
 
     # Autoencoder
-    z_encoded, mean_encoded, log_var_encoded = encoder(encoder_input)
-
-    reconstructed = decoder(z_encoded)
+    z, z_mean, z_log_var = encoder(encoder_inputs)
+    outputs = decoder(z)
 
     auto = keras.Model(
-        encoder_input,
-        reconstructed
+        encoder_inputs,
+        outputs
     )
 
     # KL divergence loss
     kl_loss = -0.5 * keras.backend.sum(
-        1 + log_var_encoded
-        - keras.backend.square(mean_encoded)
-        - keras.backend.exp(log_var_encoded),
+        1 + z_log_var
+        - keras.backend.square(z_mean)
+        - keras.backend.exp(z_log_var),
         axis=-1
     )
 
@@ -98,7 +97,7 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
 
     auto.compile(
         optimizer='adam',
-        loss='binary_crossentropy'
+        loss=keras.losses.binary_crossentropy
     )
 
     return encoder, decoder, auto
