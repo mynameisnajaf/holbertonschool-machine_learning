@@ -1,54 +1,103 @@
 #!/usr/bin/env python3
-''' "Vanilla" Autoencoder'''
+"""Variational Autoencoder"""
 import tensorflow.keras as keras
 
 
 def autoencoder(input_dims, hidden_layers, latent_dims):
-    '''A function that does the trick'''
+    """Creates a variational autoencoder"""
 
     def sampling(args):
-        '''sample new similar points from the latent space
-        '''
+        """Reparameterization trick"""
         z_mean, z_log_sigma = args
+
         batch = keras.backend.shape(z_mean)[0]
         dims = keras.backend.int_shape(z_mean)[1]
-        epsilon = keras.backend.random_normal(shape=(batch, dims))
-        return z_mean + keras.backend.exp(z_log_sigma / 2) * epsilon
 
+        epsilon = keras.backend.random_normal(
+            shape=(batch, dims)
+        )
+
+        return z_mean + keras.backend.exp(
+            z_log_sigma / 2
+        ) * epsilon
+
+    # Encoder
     inputs = keras.Input(shape=(input_dims,))
 
-    encoded = keras.layers.Dense(hidden_layers[0], activation='relu')(inputs)
-    for i in range(1, len(hidden_layers)):
-        encoded = keras.layers.Dense(hidden_layers[i],
-                                     activation='relu')(encoded)
-    z_mean = keras.layers.Dense(latent_dims)(encoded)
-    z_log_sigma = keras.layers.Dense(latent_dims)(encoded)
-    z = keras.layers.Lambda(sampling)([z_mean, z_log_sigma])
+    encoded = inputs
+    for nodes in hidden_layers:
+        encoded = keras.layers.Dense(
+            nodes,
+            activation='relu'
+        )(encoded)
 
-    encoder = keras.Model(inputs, [z, z_mean, z_log_sigma])
-    latentInputs = keras.Input(shape=(latent_dims,))
-    decoded = latentInputs
+    z_mean = keras.layers.Dense(
+        latent_dims,
+        activation=None
+    )(encoded)
 
-    for i in range(len(hidden_layers) - 1, -1, -1):
-        decoded = keras.layers.Dense(hidden_layers[i],
-                                     activation='relu')(decoded)
+    z_log_sigma = keras.layers.Dense(
+        latent_dims,
+        activation=None
+    )(encoded)
 
-    decoded = keras.layers.Dense(input_dims, activation='sigmoid')(decoded)
-    decoder = keras.Model(latentInputs, decoded)
+    z = keras.layers.Lambda(
+        sampling
+    )([z_mean, z_log_sigma])
 
-    def kl_reconstruction_loss(true, pred):
-        # Reconstruction loss
-        reconstruction_loss = keras.losses.binary_crossentropy(inputs,
-                                                               vae_outputs)
-        reconstruction_loss *= input_dims
-        kl_loss = 1 + z_log_sigma - keras.backend.square(z_mean) -\
-            keras.backend.exp(z_log_sigma)
-        kl_loss = keras.backend.sum(kl_loss, axis=-1)
-        kl_loss *= -0.5
-        return keras.backend.mean(reconstruction_loss + kl_loss)
+    encoder = keras.Model(
+        inputs,
+        [z, z_mean, z_log_sigma]
+    )
 
-    vae_outputs = decoder(encoder(inputs))
-    autoencoder = keras.Model(inputs, vae_outputs)
+    # Decoder
+    latent_inputs = keras.Input(
+        shape=(latent_dims,)
+    )
 
-    autoencoder.compile(optimizer='adam', loss=kl_reconstruction_loss)
-    return encoder, decoder, autoencoder
+    decoded = latent_inputs
+
+    for nodes in reversed(hidden_layers):
+        decoded = keras.layers.Dense(
+            nodes,
+            activation='relu'
+        )(decoded)
+
+    outputs = keras.layers.Dense(
+        input_dims,
+        activation='sigmoid'
+    )(decoded)
+
+    decoder = keras.Model(
+        latent_inputs,
+        outputs
+    )
+
+    # Autoencoder
+    z, z_mean, z_log_sigma = encoder(inputs)
+
+    vae_outputs = decoder(z)
+
+    auto = keras.Model(
+        inputs,
+        vae_outputs
+    )
+
+    # KL divergence loss
+    kl_loss = -0.5 * keras.backend.sum(
+        1 + z_log_sigma
+        - keras.backend.square(z_mean)
+        - keras.backend.exp(z_log_sigma),
+        axis=-1
+    )
+
+    auto.add_loss(
+        keras.backend.mean(kl_loss)
+    )
+
+    auto.compile(
+        optimizer='adam',
+        loss='binary_crossentropy'
+    )
+
+    return encoder, decoder, auto
