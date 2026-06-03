@@ -21,29 +21,17 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
 
     x = encoder_inputs
     for nodes in hidden_layers:
-        x = keras.layers.Dense(
-            units=nodes,
-            activation='relu'
-        )(x)
+        x = keras.layers.Dense(units=nodes, activation='relu')(x)
 
-    z_mean = keras.layers.Dense(
-        units=latent_dims,
-        activation=None
-    )(x)
-
-    z_log_var = keras.layers.Dense(
-        units=latent_dims,
-        activation=None
-    )(x)
+    z_mean = keras.layers.Dense(units=latent_dims, activation=None)(x)
+    z_log_var = keras.layers.Dense(units=latent_dims, activation=None)(x)
 
     def sampling(args):
         """Reparameterization trick"""
         mean, log_var = args
-
         epsilon = keras.backend.random_normal(
             shape=keras.backend.shape(mean)
         )
-
         return mean + keras.backend.exp(log_var / 2) * epsilon
 
     z = keras.layers.Lambda(
@@ -61,43 +49,35 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
 
     x = decoder_inputs
     for nodes in reversed(hidden_layers):
-        x = keras.layers.Dense(
-            units=nodes,
-            activation='relu'
-        )(x)
+        x = keras.layers.Dense(units=nodes, activation='relu')(x)
 
     decoder_outputs = keras.layers.Dense(
         units=input_dims,
         activation='sigmoid'
     )(x)
 
-    decoder = keras.Model(
-        decoder_inputs,
-        decoder_outputs
-    )
+    decoder = keras.Model(decoder_inputs, decoder_outputs)
 
-    # Autoencoder
-    z, z_mean, z_log_var = encoder(encoder_inputs)
-    outputs = decoder(z)
+    # Autoencoder — reuse encoder's own output tensors for the KL loss
+    encoder_outputs = encoder(encoder_inputs)
+    z_sample = encoder_outputs[0]
+    z_mean_out = encoder_outputs[1]
+    z_log_var_out = encoder_outputs[2]
 
-    auto = keras.Model(
-        encoder_inputs,
-        outputs
-    )
+    outputs = decoder(z_sample)
 
-    # KL divergence loss
+    auto = keras.Model(encoder_inputs, outputs)
+
+    # KL divergence loss using the autoencoder's internal tensors
     kl_loss = -0.5 * keras.backend.sum(
-        1 + z_log_var
-        - keras.backend.square(z_mean)
-        - keras.backend.exp(z_log_var),
+        1 + z_log_var_out
+        - keras.backend.square(z_mean_out)
+        - keras.backend.exp(z_log_var_out),
         axis=-1
     )
 
     auto.add_loss(keras.backend.mean(kl_loss))
 
-    auto.compile(
-        optimizer='adam',
-        loss='binary_crossentropy'
-    )
+    auto.compile(optimizer='adam', loss='binary_crossentropy')
 
     return encoder, decoder, auto
