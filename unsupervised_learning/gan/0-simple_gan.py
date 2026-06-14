@@ -51,37 +51,44 @@ class Simple_GAN(keras.Model) :
         return tf.gather(self.real_examples, random_indices)
 
     # overloading train_step()
-    def train_step(self,useless_argument):
-        """train step"""
+    def train_step(self):
+        """Used to train the discriminator"""
         for _ in range(self.disc_iter):
-            with tf.GradientTape(persistent=True) as tape:
+            with tf.GradientTape() as tape:
                 real_sample = self.get_real_sample()
                 fake_sample = self.get_fake_sample()
 
-                real_loss = self.discriminator(real_sample, training=True)
-                fake_loss = self.discriminator(fake_sample, training=True)
+                real_pred = self.discriminator(real_sample, training=True)
+                fake_pred = self.discriminator(fake_sample, training=True)
 
-                discr_loss = self.discriminator.loss(real_loss, fake_loss)
-            grads = tape.gradient(discr_loss,
-                                  self.discriminator.trainable_variables
-                                  )
+                discr_loss = self.discriminator.loss(real_pred, fake_pred)
+
+            grads = tape.gradient(
+                discr_loss,
+                self.discriminator.trainable_variables
+            )
+
             self.discriminator.optimizer.apply_gradients(
                 zip(grads, self.discriminator.trainable_variables)
             )
 
-            with tf.GradientTape(persistent=True) as tape:
-                fake_sample = self.get_fake_sample()
-                fake_pred = self.discriminator(fake_sample, training=True)
-                gen_loss = self.generator.loss(fake_pred)
+        with tf.GradientTape() as tape:
+            fake_sample = self.get_fake_sample(training=True)
 
+            fake_pred = self.discriminator(fake_sample, training=False)
 
-            grads = tape.gradient(
-                gen_loss,
-                self.generator.trainable_variables
-            )
+            gen_loss = self.generator.loss(fake_pred)
 
-            self.generator.optimizer.apply_gradients(
-                zip(grads, self.generator.trainable_variables)
-            )
+        grads = tape.gradient(
+            gen_loss,
+            self.generator.trainable_variables
+        )
 
-        return {"discr_loss": discr_loss, "gen_loss": gen_loss}
+        self.generator.optimizer.apply_gradients(
+            zip(grads, self.generator.trainable_variables)
+        )
+
+        return {
+            "discr_loss": discr_loss,
+            "gen_loss": gen_loss
+        }
