@@ -51,7 +51,7 @@ class Simple_GAN(keras.Model) :
         return tf.gather(self.real_examples, random_indices)
 
     # overloading train_step()
-    def train_step(self):
+    def train_step(self, useless_argument):
         """Used to train the discriminator"""
         for _ in range(self.disc_iter):
             with tf.GradientTape() as tape:
