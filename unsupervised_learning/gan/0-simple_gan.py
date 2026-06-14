@@ -56,7 +56,7 @@ class Simple_GAN(keras.Model) :
         for _ in range(self.disc_iter):
             with tf.GradientTape(persistent=True) as tape:
                 real_sample = self.get_real_sample()
-                fake_sample = self.get_fake_sample(training=True)
+                fake_sample = self.get_fake_sample()
 
                 real_loss = self.discriminator(real_sample, training=True)
                 fake_loss = self.discriminator(fake_sample, training=True)
@@ -70,7 +70,7 @@ class Simple_GAN(keras.Model) :
             )
 
             with tf.GradientTape(persistent=True) as tape:
-                fake_sample = self.get_fake_sample(training=True)
+                fake_sample = self.get_fake_sample()
                 fake_pred = self.discriminator(fake_sample, training=True)
                 gen_loss = self.generator.loss(fake_pred)
 
