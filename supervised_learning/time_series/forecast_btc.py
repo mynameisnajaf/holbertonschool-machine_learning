@@ -13,6 +13,7 @@ class WindowGenerator():
     """
     Creates windows, consecutive samples of data, to
         find trends within to use to make predictions
+        else now
     """
     def __init__(self, input_width, label_width, shift,
                  train_data, valid_data, test_data, label_columns=None):
