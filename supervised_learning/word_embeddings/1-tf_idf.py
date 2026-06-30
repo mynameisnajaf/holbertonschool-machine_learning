@@ -3,7 +3,7 @@
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
-def bag_of_words(sentences, vocab=None):
+def tf_idf(sentences, vocab=None)
     """A function that does the trick"""
     vectorizer = TfidfVectorizer(vocabulary=vocab)
     X = vectorizer.fit_transform(sentences)
