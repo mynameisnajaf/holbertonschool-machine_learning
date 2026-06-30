@@ -15,6 +15,6 @@ def fasttext_model(sentences, size=100, min_count=5,
                                    window=window, negative=negative,
                                    seed=seed, sg=cbow, workers=workers)
     model.train(sentences, total_examples=model.corpus_count,
-                epochs=model.iter)
+                epochs=model.epochs)
 
     return model
