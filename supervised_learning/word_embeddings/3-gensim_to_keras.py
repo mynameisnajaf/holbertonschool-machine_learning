@@ -1,7 +1,20 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
+import tensorflow.keras as keras
 
 
 def gensim_to_keras(model):
-    """A function that does the trick"""
-    return model.wv.get_keras_embedding(train_embeddings=True)
+    """
+    Converts a trained gensim Word2Vec model to a trainable Keras
+    Embedding layer.
+    """
+    weights = model.wv.vectors
+
+    embedding = keras.layers.Embedding(
+        input_dim=weights.shape[0],
+        output_dim=weights.shape[1],
+        weights=[weights],
+        trainable=True
+    )
+
+    return embedding
