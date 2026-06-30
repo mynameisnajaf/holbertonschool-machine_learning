@@ -14,10 +14,12 @@ def word2vec_model(sentences, vector_size=100, min_count=5, window=5,
         cbow_flag = 1
     model = gensim.models.Word2Vec(sentences=sentences,
                      min_count=min_count,
+                     vector_size=vector_size,
                      window=window,
                      negative=negative,
                      sg=cbow_flag,
                      seed=seed,
+                     epochs=epochs,
                      workers=workers)
     model.train(sentences,
                 total_examples=model.corpus_count,
