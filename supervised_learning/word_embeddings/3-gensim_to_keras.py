@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
-import tensorflow.keras as keras
+import tensorflow as tf
 
 
 def gensim_to_keras(model):
@@ -10,7 +10,7 @@ def gensim_to_keras(model):
     """
     weights = model.wv.vectors
 
-    embedding = keras.layers.Embedding(
+    embedding = tf.keras.layers.Embedding(
         input_dim=weights.shape[0],
         output_dim=weights.shape[1],
         weights=[weights],
