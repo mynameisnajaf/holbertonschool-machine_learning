@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """A module that creates a Word2Vec model"""
-
 import gensim
 
 
