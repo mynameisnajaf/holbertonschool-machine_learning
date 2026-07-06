@@ -31,7 +31,6 @@ class RNNEncoder(tf.keras.layers.Layer):
                                        return_sequences=True,
                                        recurrent_initializer="glorot_uniform")
 
-
     def initialize_hidden_state(self):
         """Initialize hidden state"""
         hidden_state = tf.zeros(shape=[self.batch, self.units])
