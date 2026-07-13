@@ -1,30 +1,32 @@
 #!/usr/bin/env python3
-"""A module that does the trick"""
-import tensorflow.compat.v2 as tf
-import tensorflow_datasets as tfds
+"""Dataset module"""
+
+import transformers
+from setup import load_pt2en
 
 
 class Dataset:
-    """A class that does the trick"""
+    """Dataset class"""
 
     def __init__(self):
-        """Constructor"""
-        self.data_train = tfds.load("ted_hrlr_translate/pt_to_en",
-                                    split="train",
-                                    as_supervised=True)
-        self.data_valid = tfds.load("ted_hrlr_translate/pt_to_en",
-                                    split="validation",
-                                    as_supervised=True)
+        """Class constructor"""
+        self.data_train = load_pt2en(split="train")
+        self.data_valid = load_pt2en(split="validation")
+
         self.tokenizer_pt, self.tokenizer_en = self.tokenize_dataset(
-            self.data_train)
+            self.data_train
+        )
 
     def tokenize_dataset(self, data):
-        """Tokenize the dataset"""
-        SubwordTextEncoder = tfds.deprecated.text.SubwordTextEncoder
-        tokenizer_pt = SubwordTextEncoder.build_from_corpus(
-            (pt.numpy() for pt, en in data),
-            target_vocab_size=(2 ** 15))
-        tokenizer_en = SubwordTextEncoder.build_from_corpus(
-            (en.numpy() for pt, en in data),
-            target_vocab_size=(2 ** 15))
+        """
+        Creates tokenizers for Portuguese and English.
+        """
+        tokenizer_pt = transformers.AutoTokenizer.from_pretrained(
+            "neuralmind/bert-base-portuguese-cased"
+        )
+
+        tokenizer_en = transformers.AutoTokenizer.from_pretrained(
+            "bert-base-uncased"
+        )
+
         return tokenizer_pt, tokenizer_en
