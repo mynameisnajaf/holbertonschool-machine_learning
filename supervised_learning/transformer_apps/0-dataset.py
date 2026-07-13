@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Dataset module"""
 
-import transformers
+import tensorflow_datasets as tfds
 from setup import load_pt2en
 
 
 class Dataset:
-    """Dataset class"""
+    """Loads and tokenizes the Portuguese-English translation dataset."""
 
     def __init__(self):
-        """Class constructor"""
+        """Class constructor."""
         self.data_train = load_pt2en(split="train")
         self.data_valid = load_pt2en(split="validation")
 
@@ -19,14 +19,16 @@ class Dataset:
 
     def tokenize_dataset(self, data):
         """
-        Creates tokenizers for Portuguese and English.
+        Creates subword tokenizers for Portuguese and English.
         """
-        tokenizer_pt = transformers.AutoTokenizer.from_pretrained(
-            "neuralmind/bert-base-portuguese-cased"
+        tokenizer_pt = tfds.deprecated.text.SubwordTextEncoder.build_from_corpus(
+            (pt.numpy() for pt, en in data),
+            target_vocab_size=2 ** 15
         )
 
-        tokenizer_en = transformers.AutoTokenizer.from_pretrained(
-            "bert-base-uncased"
+        tokenizer_en = tfds.deprecated.text.SubwordTextEncoder.build_from_corpus(
+            (en.numpy() for pt, en in data),
+            target_vocab_size=2 ** 15
         )
 
         return tokenizer_pt, tokenizer_en
