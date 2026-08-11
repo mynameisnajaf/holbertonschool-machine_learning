@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
-import gymnasium as gym
 import numpy as np
 
 
