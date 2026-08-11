@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """A module that does the trick"""
 import numpy as np
-from kagglehub import env
 
 
 def epsilon_greedy(Q, state, epsilon):
