@@ -14,7 +14,7 @@ def policy_gradient(state, weight):
     """Computes the Monte-Carlo policy gradient based on a state and weight matrix."""
     p = policy(state, weight)
 
-    action = np.random.choice(p.shape[1], p=p[0])
+    action = np.random.multinomial(1, p[0]).argmax()
 
     one_hot = np.zeros(p.shape[1])
     one_hot[action] = 1
