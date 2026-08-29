@@ -16,7 +16,7 @@ def policy_gradient(state, weight):
 
     p = policy(state, weight)
 
-    action = np.random.multinomial(1, p[0]).argmax()
+    action = np.random.choice(len(p[0]), p=p[0])
 
     one_hot = np.zeros(p.shape[1])
     one_hot[action] = 1
