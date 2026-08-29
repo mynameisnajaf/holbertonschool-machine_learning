@@ -4,7 +4,7 @@ import numpy as np
 policy_gradient = __import__('policy_gradient').policy_gradient
 
 
-def train(env, nb_episodes, alpha=0.000045, gamma=0.98):
+def train(env, nb_episodes, alpha=0.000045, gamma=0.98, show_result=False):
     """The main function that implements the policy gradient algorithm"""
     weight = np.random.rand(env.observation_space.shape[0],
                             env.action_space.n)
@@ -32,6 +32,9 @@ def train(env, nb_episodes, alpha=0.000045, gamma=0.98):
 
             score += reward
             state = np.reshape(next_state, (1, -1))
+
+            if show_result and episode % 1000 == 0:
+                env.render()
 
         discounted = np.zeros(len(rewards))
         running = 0
