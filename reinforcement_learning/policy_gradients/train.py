@@ -47,4 +47,4 @@ def train(env, nb_episodes, alpha=0.000045, gamma=0.98):
 
         print("Episode: {} Score: {}".format(episode, score))
 
-    return np.array(scores)
+    return scores
